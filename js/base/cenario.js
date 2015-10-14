@@ -13,7 +13,25 @@ function inserirBarraHabilidades(lado){
 		});
 }
 
+function inserirMensagemVitoria(){
+	var bloco = '\
+		<div id="vitoria"></div>\
+	';
+	$("#areaJogo").append(bloco);
+}
+
+function inserirConsole(){
+	var bloco = '\
+		<div align="center">\
+			<div id="console">\
+				<div id="conteudoConsole"></div>\
+			</div>\
+		</div>\
+	';
+	$("#areaJogo").append(bloco);
+}
+
 $(function(){
-	inserirBarraHabilidades("left");
-	inserirBarraHabilidades("right");
+	inserirMensagemVitoria();
+	inserirConsole();
 });
