@@ -1,106 +1,114 @@
 var personagens = {
-	["aliado"] : {
-		posicaoInicial: {
-			bottom: 100,
-			left: 100
-		},
-		hp: 100,
-		mana: 100,
-		statusIniciais: {
-			atk: 10,
-			def: 5
+	["aliado"]: {
+		valoresIniciais: {
+			posicao: {
+				bottom: 100,
+				left: 100
+			},
+			hp: 100,
+			mp: 30,
+			status: {
+				atk: 10,
+				def: 5
+			}
 		},
 		habilidades: [
 			{
 				nome: "Fúria Selvagem",
 				efeitos: [
-					[0, 5, 20]
+					[0, 5, 100, 1]
 				],
 				custo: 20
 			},
 			{
 				nome: "Canalizar Poder",
 				efeitos: [
-					[0, 3, 30]
+					[0, 3, 30, 0]
 				],
 				custo: 0
 			}
-		]
+		],
+		data: {
+			turno: 0,
+			status: {},
+			statusAdicionais: {},
+			modificadores: []
+		}
 	},
-	["inimigo"] : {
-		posicaoInicial: {
-			bottom: 100,
-			right: 100
-		},
-		hp: 70,
-		mana: 40,
-		statusIniciais: {
-			atk: 15,
-			def: 0
+	["inimigo"]: {
+		valoresIniciais: {
+			posicao: {
+				bottom: 100,
+				right: 100
+			},
+			hp: 100,
+			mp: 100,
+			status: {
+				atk: 10,
+				def: 5
+			}
 		},
 		habilidades: [
 			{
 				nome: "Fúria Selvagem",
 				efeitos: [
-					[0, 5, 20]
+					[0, 5, 20, 1]
 				],
 				custo: 20
 			},
 			{
 				nome: "Canalizar Poder",
 				efeitos: [
-					[0, 3, 30]
+					[0, 3, 30, 0]
 				],
 				custo: 0
 			}
-		]
+		],
+		data: {
+			turno: 0,
+			status: {},
+			statusAdicionais: {},
+			modificadores: []
+		}
 	}
 }
-
-// Habilidades
-// nome: "Nome da Habilidade",
-// efeitos: [
-	// [Alvo (0 ou 1), Tipo, Valor]
-// ],
-// custo: 20
 
 var habilidades = {
 	"hp": "HP",
 	"hpmax": "HPMax",
-	"mana": "Mana",
-	"manamax": "ManaMax",
+	"mp": "MP",
+	"mpmax": "MPMax",
 	"atk": "ATK",
 	"def": "DEF"
 }
-// var habilidades = {
-	// 1: "HP",
-	// 2: "HPMax",
-	// 3: "Mana",
-	// 4: "ManaMax",
-	// 5: "ATK",
-	// 6: "DEF"
-// }
 
 function inserirPersonagem(id){
 	var bloco = '\
-		<div class="personagem" id="'+id+'" data-turno="0" data-hp="0" data-hpmax="0" data-atk="0" data-tatk="0" data-def="0" data-tdef="0" data-mana="0" data-tmana="0" data-manamax="0">\
+		<div class="personagem" id="'+id+'">\
 			<div class="alteracaoPersonagem"></div>\
 			<div class="hpBarraPersonagemBase">\
 				<div class="hpBarraPersonagemConteudo"></div>\
 				<div class="hpBarraPersonagemTexto"></div>\
 			</div>\
-			<div class="manaBarraPersonagemBase">\
-				<div class="manaBarraPersonagemConteudo"></div>\
-				<div class="manaBarraPersonagemTexto"></div>\
+			<div class="mpBarraPersonagemBase">\
+				<div class="mpBarraPersonagemConteudo"></div>\
+				<div class="mpBarraPersonagemTexto"></div>\
 			</div>\
-			<div class="turnoPersonagem"></div>\
+			<div class="turnoPersonagem">\
+				<img src="imagens/turno.gif">\
+			</div>\
 			<div class="imagemPersonagem"></div>\
 			<div class="barraStatusPersonagem"></div>\
+			<div class="barraModificadoresPersonagem"></div>\
 		</div>\
 	';
 
 	var personagem = personagens[id];
-	var posicaoInicial = personagem.posicaoInicial;
+	var valoresIniciais = personagem.valoresIniciais;
+	var posicao = valoresIniciais.posicao;
+	var hp = valoresIniciais.hp;
+	var mp = valoresIniciais.mp;
+	var status = valoresIniciais.status;
 
 	$("#areaJogo").append(bloco);
 
@@ -108,22 +116,22 @@ function inserirPersonagem(id){
 		"background": "url(imagens/"+id+".png)"
 	});
 
-	$.each(posicaoInicial, function(index, value){
+	$.each(posicao, function(index, value){
 		$("#"+id).css(index, value+"px");
 	});
 
-	$("#"+id).data("hp", personagem.hp);
-	$("#"+id).data("hpmax", personagem.hp);
-	$("#"+id+" .hpBarraPersonagemTexto").append('<span class="hp_atual">'+personagem.hp+"</span>/"+personagem.hp);
+	personagens[id].data.status.hp = hp;
+	personagens[id].data.status.hpmax = hp;
+	personagens[id].data.status.mp = mp;
+	personagens[id].data.status.mpmax = mp;
 
-	$("#"+id).data("mana", personagem.mana);
-	$("#"+id).data("manamax", personagem.mana);
-	$("#"+id+" .manaBarraPersonagemTexto").append('<span class="mana_atual">'+personagem.mana+"</span>/"+personagem.mana);
+	$("#"+id+" .hpBarraPersonagemTexto").append('<span class="hp_atual">'+hp+"</span>/"+hp);
+	$("#"+id+" .mpBarraPersonagemTexto").append('<span class="mp_atual">'+mp+"</span>/"+mp);
 
-	var statusIniciais = personagem.statusIniciais;
-	$.each(statusIniciais, function(index, value){
-		$("#"+id).data(index, value);
-		$("#"+id+" .barraStatusPersonagem").append(habilidades[index]+": "+value+'<span class="t'+index+'">+0</span><br>');
+	$.each(status, function(index, value){
+		personagens[id].data.status[index] = value;
+		personagens[id].data.statusAdicionais[index] = 0;
+		$("#"+id+" .barraStatusPersonagem").append(habilidades[index]+": "+value+'<span class="'+index+'_adicional">+0</span><br>');
 	});
 
 	if(id == "aliado"){
@@ -146,58 +154,51 @@ function inserirPersonagem(id){
 	$("#"+id+" .turnoPersonagem").addClass((id == "aliado" ? "left" : "right"));
 }
 
-function atacarPersonagem(atacanteId, defensorId){
-	var atacante = $("#"+atacanteId);
-	var defensor = $("#"+defensorId);
-	var atacanteATK = atacante.data("atk");
-	var atacanteATKAdicional = atacante.data("tatk");
-	var defensorDEF = defensor.data("def");
-	var defensorDEFAdicional = defensor.data("tdef");
-	var ataque = atacanteATK + atacanteATKAdicional - defensorDEF + defensorDEFAdicional;
-
-	modificarValorAlvo(atacanteId, "tatk", 0)
+function atacarPersonagem(personagemId, inimigoId){
+	var atk = pegarStatusPersonagem(personagemId, "atk");
+	var atkAdicional = pegarStatusAdicionalPersonagem(personagemId, "atk");
+	var def = pegarStatusPersonagem(inimigoId, "def");
+	var defAdicional = pegarStatusAdicionalPersonagem(inimigoId, "def");
+	var ataque = atk + atkAdicional - def - defAdicional;
 
 	if(ataque > 0){
-		var defensorHP = defensor.data("hp");
-		var novoHPDefensor = defensorHP - ataque;
-		if(alterarBarra("hp", defensorId, novoHPDefensor, ataque)){
-			declararVitoria(atacanteId);
-			finalizarTurno(atacanteId);
+		if(alterarHPPersonagem(inimigoId, -ataque)){
+			declararVitoria(personagemId);
+			finalizarTurno(personagemId);
 			return;
 		}
 	}
 
-	processarTurnos(atacanteId, defensorId);
+	processarTurnos(personagemId, inimigoId);
 }
 
 function usarHabilidade(personagemId, inimigoId, habilidadeId){
-	var elemento = $("#"+personagemId)
-
-	var habilidade = personagens[personagemId].habilidades[habilidadeId];
-
+	var habilidade = pegarHabilidadePersonagem(personagemId, habilidadeId);
 	var custo = habilidade.custo;
-	var mana = elemento.data("mana");
+	var mp = pegarMPPersonagem(personagemId);
 
-	if(mana < custo){
-		inserirMensagemConsole("Mana Insuficiente.");
+	if(mp < custo){
+		inserirMensagemConsole("MP Insuficiente.");
 		return false;
 	}
 
-	alterarBarra("mana", personagemId, mana-custo, custo);
+	alterarMPPersonagem(personagemId, -custo)
 
 	var efeitos = habilidade.efeitos;
-	
+
 	$.each(efeitos, function(index, value){
 		var alvo = value[0];
 		var alvoId = (alvo == 0 ? personagemId : inimigoId);
 		var tipo = value[1];
 		var valor = value[2];
+		var turnos = (value[3] && value[3] > 0 ? value[3] : 0);
+
 		switch(tipo){
 			case 3:
-				alterarBarra("mana", alvoId, pegarQuantidadeBarra("mana", alvoId)+valor, valor);
+				alterarMPPersonagem(alvoId, valor);
 				break;
 			case 5:
-				modificarValorAlvo(alvoId, "tatk", valor);
+				adicionarModificadorPersonagem(alvoId, "atk", valor, turnos);
 				break;
 		}
 	});
@@ -205,40 +206,30 @@ function usarHabilidade(personagemId, inimigoId, habilidadeId){
 	processarTurnos(personagemId, inimigoId);
 }
 
-function modificarValorAlvo(alvoId, tipo, valor){
-	$("#"+alvoId)
-	.data(tipo, valor)
-	.find("."+tipo)
-	.text(exibirSinalValor(valor));
-}
-
 function exibirSinalValor(valor){
-	return (valor >= 0 ? "+" : "-")+valor;
+	return (valor >= 0 ? "+" : "")+valor;
 }
 
-function pegarQuantidadeBarra(tipo, personagemId){
-	return $("#"+personagemId).data(tipo);
-}
-
-function alterarBarra(tipo, personagemId, novaQuantidade, quantidadeAlterada){
+function alterarBarra(tipo, personagemId, novaQuantidade, quantidadeAlterada, quantidadeMax){
 	var personagem = $("#"+personagemId);
 
-	var quantidadeMax = pegarQuantidadeBarra(tipo+"max", personagemId);
-	personagem.data(tipo, novaQuantidade);
-	var novaQuantidade = Math.min(quantidadeMax, Math.max(novaQuantidade, 0));
-
+	var novaQuantidade = Math.max(novaQuantidade, 0);
 	var novaLarguraBarra = novaQuantidade*100/quantidadeMax;
 
-	if(quantidadeAlterada > 0){
-		personagem.find("."+tipo+"_atual").text(novaQuantidade);
-		personagem.find("."+tipo+"BarraPersonagemConteudo").css("width", novaLarguraBarra+"%");
+	if(quantidadeAlterada != 0){
+		personagem
+			.find("."+tipo+"_atual")
+			.text(novaQuantidade);
+		personagem
+			.find("."+tipo+"BarraPersonagemConteudo")
+			.css("width", novaLarguraBarra+"%");
 
 		var alteracaoPersonagemClone = personagem.find(".alteracaoPersonagem:first").clone();
 		var alteracaoPersonagem = personagem.append(alteracaoPersonagemClone);
 		var marginTop = parseInt(alteracaoPersonagem.css("margin-top").replace("px", ""));
 
 		alteracaoPersonagemClone
-			.html(quantidadeAlterada)
+			.html(exibirSinalValor(quantidadeAlterada))
 			.css({
 				"color": (tipo == "hp" ? "red" : "blue"),
 				"opacity": 1
@@ -246,11 +237,6 @@ function alterarBarra(tipo, personagemId, novaQuantidade, quantidadeAlterada){
 			.animate({"margin-top": marginTop-150, "opacity": 0}, 1500, function(){
 				$(this).remove();
 			});
-	}
-
-	if(tipo == "hp" && novaQuantidade == 0){
-		matarPersonagem(personagemId);
-		return true;
 	}
 
 	return false;
@@ -262,8 +248,9 @@ function matarPersonagem(personagemId){
 }
 
 function iniciarTurno(personagemId){
-	$("#"+personagemId).data("turno", 1);
-	animarTurno(personagemId);
+	personagens[personagemId].data.turno = 1;
+
+	$("#"+personagemId).find(".turnoPersonagem").fadeIn(500);
 
 	if(personagemId == "inimigo"){
 		setTimeout(function(){
@@ -272,28 +259,35 @@ function iniciarTurno(personagemId){
 	}
 }
 
-function animarTurno(personagemId){
-	var tempoAnimacao = 180;
-	var elemento = $("#"+personagemId)
-
-	var elementoTurno = elemento.find(".turnoPersonagem");
-	if(elemento.data("turno") == 0)
-		return false;
-
-	var posicaoTop = parseInt(elementoTurno.css("top").replace("px", ""));
-	elementoTurno.fadeIn(500);
-	elementoTurno.animate({"top": posicaoTop-20}, tempoAnimacao, function(){
-		$(this).animate({"top": posicaoTop}, tempoAnimacao+50, function(){
-			setTimeout(function(){
-				animarTurno(personagemId);
-			}, tempoAnimacao+150);
-		});
-	});
-}
-
 function finalizarTurno(personagemId){
+	personagens[personagemId].data.turno = 0;
+
+	var modificadores = pegarModificadoresPersonagem(personagemId);
+	$.each(modificadores, function(index, modificador){
+		if(modificador[3] == 1)
+			personagens[personagemId].data.modificadores[index][3] = 0;
+		else if(modificador[2] > 0)
+			personagens[personagemId].data.modificadores[index][2] = modificador[2] - 1;
+	});
+
+	atualizarModificadoresPersonagem(personagemId);
+
+	$("#"+personagemId+" .modificadorPersonagem").each(function(){
+		if(parseInt($(this).data("bloqueado")) == 1)
+			$(this).data("bloqueado", 0);
+		else{
+			var novoTurno = parseInt($(this).data("turno")) - 1;
+			if(novoTurno == 0)
+				$(this).remove();
+			else
+				$(this)
+					.data("turno", novoTurno)
+					.find(".turno")
+					.text(novoTurno);
+		}
+	});
+
 	$("#"+personagemId)
-	.data("turno", 0)
 	.find(".turnoPersonagem")
 	.fadeOut(200);
 }
@@ -301,6 +295,7 @@ function finalizarTurno(personagemId){
 function inteligenciaArtificial(personagemId){
 	var inimigoId = "aliado";
 	atacarPersonagem(personagemId, inimigoId);
+	processarTurnos(personagemId, inimigoId);
 }
 
 function processarTurnos(personagem1, personagem2){
@@ -316,10 +311,107 @@ function declararVitoria(personagemId){
 	.animate({"opacity": 1}, 1000);
 }
 
+function adicionarModificadorPersonagem(personagemId, tipo, valor, turnos){
+	personagens[personagemId].data.modificadores.push([tipo, valor, turnos, 1]);
+
+	var bloco = '\
+		<div class="modificadorPersonagem" data-bloqueado="1" data-turno="'+turnos+'">\
+			'+tipo+': '+valor+'<br>\
+			Turnos: <span class="turno">'+turnos+'</span>\
+		</div>\
+	';
+
+	$("#"+personagemId+" .barraModificadoresPersonagem").append(bloco);
+
+	atualizarModificadoresPersonagem(personagemId);
+}
+
+function atualizarModificadoresPersonagem(personagemId){
+	var modificadores = pegarModificadoresPersonagem(personagemId);
+	$.each(modificadores, function(index, modificador){
+		var valor = modificador[1];
+		var turnos = modificador[2];
+		if(turnos == 0){
+			valor = 0;
+			personagens[personagemId].data.modificadores[index][1] = valor;
+		}
+	});
+
+	personagens[personagemId].data.statusAdicionais = {};
+
+	$.each(modificadores, function(index, modificador){
+		var tipo = modificador[0];
+		var valor = modificador[1];
+		var valorAtual = personagens[personagemId].data.statusAdicionais[tipo] || 0;
+		var novoValor = valor + valorAtual;
+
+		personagens[personagemId].data.statusAdicionais[tipo] = novoValor;
+
+		$("#"+personagemId)
+		.find("."+tipo+"_adicional")
+		.text(exibirSinalValor(novoValor));
+	});
+}
+
 function inserirMensagemConsole(mensagem){
 	var elemento = $("#conteudoConsole");
 	elemento.append(mensagem+"<br>");
 	elemento.scrollTop(elemento[0].scrollHeight);
+}
+
+function pegarModificadoresPersonagem(personagemId){
+	return personagens[personagemId].data.modificadores;
+}
+
+function pegarTurnoPersonagem(personagemId){
+	return personagens[personagemId].data.turno;
+}
+
+function pegarHPPersonagem(personagemId){
+	return personagens[personagemId].data.status.hp;
+}
+
+function pegarHPMaxPersonagem(personagemId){
+	return personagens[personagemId].data.status.hpmax;
+}
+
+function pegarMPPersonagem(personagemId){
+	return personagens[personagemId].data.status.mp;
+}
+
+function pegarMPMaxPersonagem(personagemId){
+	return personagens[personagemId].data.status.mpmax;
+}
+
+function pegarHabilidadePersonagem(personagemId, habilidadeId){
+	return personagens[personagemId].habilidades[habilidadeId];
+}
+
+function pegarStatusPersonagem(personagemId, status){
+	return personagens[personagemId].data.status[status] || 0;
+}
+
+function pegarStatusAdicionalPersonagem(personagemId, status){
+	return personagens[personagemId].data.statusAdicionais[status] || 0;
+}
+
+function alterarHPPersonagem(personagemId, quantidade){
+	var quantidadeMax = pegarHPMaxPersonagem(personagemId);
+	var novaQuantidade = Math.min(pegarHPPersonagem(personagemId) + quantidade, quantidadeMax);
+	personagens[personagemId].data.status.hp = novaQuantidade;
+	alterarBarra("hp", personagemId, novaQuantidade, quantidade, quantidadeMax);
+	if(novaQuantidade <= 0){
+		matarPersonagem(personagemId);
+		return true;
+	}
+	return false;
+}
+
+function alterarMPPersonagem(personagemId, quantidade){
+	var quantidadeMax = pegarMPMaxPersonagem(personagemId);
+	var novaQuantidade = Math.min(pegarMPPersonagem(personagemId) + quantidade, quantidadeMax);
+	personagens[personagemId].data.status.mp = novaQuantidade;
+	alterarBarra("mp", personagemId, novaQuantidade, quantidade, quantidadeMax);
 }
 
 $(function(){
@@ -328,27 +420,30 @@ $(function(){
 	iniciarTurno("aliado");
 
 	$(".barraHabilidadesPersonagem.left .ataque").click(function(){
-		var turno = $(this).closest(".personagem").data("turno");
+		var personagem = $(this).closest(".personagem");
+		var personagemId = personagem.attr("id");
+
+		var turno = pegarTurnoPersonagem(personagemId);
 		if(turno == 0)
 			return false;
 
-		var personagem = $(this).closest(".personagem");
-		var personagemId = personagem.attr("id");
 		var inimigoId = (personagemId == "aliado" ? "inimigo" : "aliado");
 
 		atacarPersonagem(personagemId, inimigoId);
 	});
 
 	$(".barraHabilidadesPersonagem.left .habilidade").click(function(){
-		var turno = $(this).closest(".personagem").data("turno");
+		var personagem = $(this).closest(".personagem");
+		var personagemId = personagem.attr("id");
+
+		var turno = pegarTurnoPersonagem(personagemId);
 		if(turno == 0)
 			return false;
 
-		var personagem = $(this).closest(".personagem");
-		var personagemId = personagem.attr("id");
 		var inimigoId = (personagemId == "aliado" ? "inimigo" : "aliado");
 
-		var habilidade = $(this).data("habilidade");
-		usarHabilidade(personagemId, inimigoId, habilidade);
+		var habilidadeId = $(this).data("habilidade");
+
+		usarHabilidade(personagemId, inimigoId, habilidadeId);
 	});
 });
