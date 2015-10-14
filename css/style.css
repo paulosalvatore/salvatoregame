@@ -141,6 +141,7 @@ a:hover {
 	background: blue;
 	border: 3px solid black;
 	cursor: pointer;
+	margin-left: 5px;
 }
 
 .alteracaoVidaPersonagem {
