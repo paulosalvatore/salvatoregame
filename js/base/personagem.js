@@ -5,10 +5,10 @@ var personagens = {
 			left: 100
 		},
 		hp: 100,
+		mana: 100,
 		statusIniciais: {
-			atk: 160,
-			def: 70,
-			mana: 100
+			atk: 10,
+			def: 5
 		},
 		habilidades: [
 			{
@@ -32,11 +32,11 @@ var personagens = {
 			bottom: 100,
 			right: 100
 		},
-		hp: 100,
+		hp: 70,
+		mana: 40,
 		statusIniciais: {
-			atk: 130,
-			def: 80,
-			mana: 100
+			atk: 15,
+			def: 0
 		},
 		habilidades: [
 			{
@@ -65,21 +65,33 @@ var personagens = {
 // custo: 20
 
 var habilidades = {
-	1: "hp",
-	2: "hpmax",
-	3: "mana",
-	4: "manamax",
-	5: "atk",
-	6: "def"
+	"hp": "HP",
+	"hpmax": "HPMax",
+	"mana": "Mana",
+	"manamax": "ManaMax",
+	"atk": "ATK",
+	"def": "DEF"
 }
+// var habilidades = {
+	// 1: "HP",
+	// 2: "HPMax",
+	// 3: "Mana",
+	// 4: "ManaMax",
+	// 5: "ATK",
+	// 6: "DEF"
+// }
 
 function inserirPersonagem(id){
 	var bloco = '\
 		<div class="personagem" id="'+id+'" data-turno="0" data-hp="0" data-hpmax="0" data-atk="0" data-tatk="0" data-def="0" data-tdef="0" data-mana="0" data-tmana="0" data-manamax="0">\
-			<div class="barraVidaPersonagemBase">\
-				<div class="alteracaoVidaPersonagem"></div>\
-				<div class="barraVidaPersonagemConteudo"></div>\
-				<div class="barraVidaPersonagemTexto"></div>\
+			<div class="alteracaoPersonagem"></div>\
+			<div class="hpBarraPersonagemBase">\
+				<div class="hpBarraPersonagemConteudo"></div>\
+				<div class="hpBarraPersonagemTexto"></div>\
+			</div>\
+			<div class="manaBarraPersonagemBase">\
+				<div class="manaBarraPersonagemConteudo"></div>\
+				<div class="manaBarraPersonagemTexto"></div>\
 			</div>\
 			<div class="turnoPersonagem"></div>\
 			<div class="imagemPersonagem"></div>\
@@ -91,7 +103,7 @@ function inserirPersonagem(id){
 	var posicaoInicial = personagem.posicaoInicial;
 
 	$("#areaJogo").append(bloco);
-console.log($("#"+id));
+
 	$("#"+id+" .imagemPersonagem").css({
 		"background": "url(imagens/"+id+".png)"
 	});
@@ -102,12 +114,16 @@ console.log($("#"+id));
 
 	$("#"+id).data("hp", personagem.hp);
 	$("#"+id).data("hpmax", personagem.hp);
-	$("#"+id+" .barraVidaPersonagemTexto").append('<span class="HPAtual">'+personagem.hp+"</span>/"+personagem.hp);
+	$("#"+id+" .hpBarraPersonagemTexto").append('<span class="hp_atual">'+personagem.hp+"</span>/"+personagem.hp);
+
+	$("#"+id).data("mana", personagem.mana);
+	$("#"+id).data("manamax", personagem.mana);
+	$("#"+id+" .manaBarraPersonagemTexto").append('<span class="mana_atual">'+personagem.mana+"</span>/"+personagem.mana);
 
 	var statusIniciais = personagem.statusIniciais;
 	$.each(statusIniciais, function(index, value){
 		$("#"+id).data(index, value);
-		$("#"+id+" .barraStatusPersonagem").append(index+": "+value+"<br>");
+		$("#"+id+" .barraStatusPersonagem").append(habilidades[index]+": "+value+'<span class="t'+index+'">+0</span><br>');
 	});
 
 	if(id == "aliado"){
@@ -139,10 +155,12 @@ function atacarPersonagem(atacanteId, defensorId){
 	var defensorDEFAdicional = defensor.data("tdef");
 	var ataque = atacanteATK + atacanteATKAdicional - defensorDEF + defensorDEFAdicional;
 
+	modificarValorAlvo(atacanteId, "tatk", 0)
+
 	if(ataque > 0){
 		var defensorHP = defensor.data("hp");
 		var novoHPDefensor = defensorHP - ataque;
-		if(alterarHP(defensorId, novoHPDefensor, ataque)){
+		if(alterarBarra("hp", defensorId, novoHPDefensor, ataque)){
 			declararVitoria(atacanteId);
 			finalizarTurno(atacanteId);
 			return;
@@ -153,56 +171,84 @@ function atacarPersonagem(atacanteId, defensorId){
 }
 
 function usarHabilidade(personagemId, inimigoId, habilidadeId){
+	var elemento = $("#"+personagemId)
+
 	var habilidade = personagens[personagemId].habilidades[habilidadeId];
 
 	var custo = habilidade.custo;
+	var mana = elemento.data("mana");
+
+	if(mana < custo){
+		inserirMensagemConsole("Mana Insuficiente.");
+		return false;
+	}
+
+	alterarBarra("mana", personagemId, mana-custo, custo);
+
 	var efeitos = habilidade.efeitos;
 	
 	$.each(efeitos, function(index, value){
 		var alvo = value[0];
+		var alvoId = (alvo == 0 ? personagemId : inimigoId);
 		var tipo = value[1];
 		var valor = value[2];
 		switch(tipo){
+			case 3:
+				alterarBarra("mana", alvoId, pegarQuantidadeBarra("mana", alvoId)+valor, valor);
+				break;
 			case 5:
-				var elemento = $("#"+(alvo == 0 ? personagemId : inimigoId)).data("tatk", valor);
+				modificarValorAlvo(alvoId, "tatk", valor);
 				break;
 		}
 	});
 
-	// var habilidades = {
-		// 1: "HP",
-		// 2: "HPMax",
-		// 3: "Mana",
-		// 4: "ManaMax",
-		// 5: "ATK",
-		// 6: "DEF"
-	// }
-
+	processarTurnos(personagemId, inimigoId);
 }
 
-function alterarHP(personagemId, novoHP, dano){
+function modificarValorAlvo(alvoId, tipo, valor){
+	$("#"+alvoId)
+	.data(tipo, valor)
+	.find("."+tipo)
+	.text(exibirSinalValor(valor));
+}
+
+function exibirSinalValor(valor){
+	return (valor >= 0 ? "+" : "-")+valor;
+}
+
+function pegarQuantidadeBarra(tipo, personagemId){
+	return $("#"+personagemId).data(tipo);
+}
+
+function alterarBarra(tipo, personagemId, novaQuantidade, quantidadeAlterada){
 	var personagem = $("#"+personagemId);
 
-	var HPMax = personagem.data("hpmax");
-	personagem.data("hp", novoHP);
-	var novoHP = Math.max(novoHP, 0);
+	var quantidadeMax = pegarQuantidadeBarra(tipo+"max", personagemId);
+	personagem.data(tipo, novaQuantidade);
+	var novaQuantidade = Math.min(quantidadeMax, Math.max(novaQuantidade, 0));
 
-	var novaLarguraBarraHP = novoHP*100/HPMax;
+	var novaLarguraBarra = novaQuantidade*100/quantidadeMax;
 
-	personagem.find(".HPAtual").text(novoHP);
-	personagem.find(".barraVidaPersonagemConteudo").css("width", novaLarguraBarraHP+"%");
+	if(quantidadeAlterada > 0){
+		personagem.find("."+tipo+"_atual").text(novaQuantidade);
+		personagem.find("."+tipo+"BarraPersonagemConteudo").css("width", novaLarguraBarra+"%");
 
-	var alteracaoVidaPersonagem = personagem.find(".alteracaoVidaPersonagem");
-	var marginTop = parseInt(alteracaoVidaPersonagem.css("margin-top").replace("px", ""));
+		var alteracaoPersonagemClone = personagem.find(".alteracaoPersonagem:first").clone();
+		var alteracaoPersonagem = personagem.append(alteracaoPersonagemClone);
+		var marginTop = parseInt(alteracaoPersonagem.css("margin-top").replace("px", ""));
 
-	alteracaoVidaPersonagem
-		.html(dano)
-		.css("opacity", 1)
-		.animate({"margin-top": marginTop-150, "opacity": 0}, 1500, function(){
-			$(this).css("margin-top", marginTop);
-		});
+		alteracaoPersonagemClone
+			.html(quantidadeAlterada)
+			.css({
+				"color": (tipo == "hp" ? "red" : "blue"),
+				"opacity": 1
+			})
+			.animate({"margin-top": marginTop-150, "opacity": 0}, 1500, function(){
+				$(this).remove();
+			});
+	}
 
-	if(novoHP == 0){
+	if(tipo == "hp" && novaQuantidade == 0){
 		matarPersonagem(personagemId);
 		return true;
 	}
@@ -268,6 +314,12 @@ function declararVitoria(personagemId){
 	.html("Você "+(personagemId == "aliado" ? "venceu" : "perdeu")+"!")
 	.addClass((personagemId == "aliado" ? "vitoria" : "derrota"))
 	.animate({"opacity": 1}, 1000);
+}
+
+function inserirMensagemConsole(mensagem){
+	var elemento = $("#conteudoConsole");
+	elemento.append(mensagem+"<br>");
+	elemento.scrollTop(elemento[0].scrollHeight);
 }
 
 $(function(){

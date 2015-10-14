@@ -66,27 +66,45 @@ a:hover {
 	height: 80px;
 }
 
-.barraVidaPersonagemBase {
+.hpBarraPersonagemBase,
+.manaBarraPersonagemBase {
 	margin-left: -30px;
-	margin-top: -30px;
 	position: absolute;
 	width: 134px;
 	height: 14px;
 	border: 3px solid black;
 }
 
-.barraVidaPersonagemConteudo {
+.hpBarraPersonagemConteudo,
+.manaBarraPersonagemConteudo {
 	position: absolute;
 	width: 100%;
 	height: 14px;
 	background: red;
 }
 
-.barraVidaPersonagemTexto {
+.hpBarraPersonagemTexto,
+.manaBarraPersonagemTexto {
 	position: absolute;
 	width: 100%;
 	height: 14px;
 	font-size: 12px;
+}
+
+.hpBarraPersonagemBase {
+	margin-top: -52px;
+}
+
+.hpBarraPersonagemConteudo {
+	background: red;
+}
+
+.manaBarraPersonagemBase {
+	margin-top: -30px;
+}
+
+.manaBarraPersonagemConteudo {
+	background: blue;
 }
 
 .barraStatusPersonagem {
@@ -144,14 +162,14 @@ a:hover {
 	margin-left: 5px;
 }
 
-.alteracaoVidaPersonagem {
+.alteracaoPersonagem {
 	position: absolute;
 	z-index: 2;
-	margin-top: -25px;
+	left: -25px;
+	margin-top: -55px;
 	text-align: center;
 	width: 134px;
 	height: 14px;
-	color: orange;
 	text-shadow: 2px 0 0 #000000, -2px 0 0 #000000, 0 2px 0 #000000, 0 -2px 0 #000000, 1px 1px #000000, -1px -1px 0 #000000, 1px -1px 0 #000000, -1px 1px 0 #000000;
 }
 
@@ -162,7 +180,7 @@ a:hover {
 	position: absolute;
 	width: 50px;
 	height: 65px;
-	top: -110px;
+	top: -130px;
 }
 
 .turnoPersonagem.left {
@@ -174,6 +192,7 @@ a:hover {
 }
 
 #vitoria {
+	z-index: 10;
 	position: absolute;
 	width: 100%;
 	height: 150px;
@@ -187,4 +206,24 @@ a:hover {
 
 #vitoria.derrota {
 	color: red;
+}
+
+#console {
+	top: 10px;
+	position: absolute;
+	width: 100%;
+	height: 80px;
+	font-size: 16px;
+}
+
+#conteudoConsole {
+	overflow-x: hidden;
+	text-align: left;
+	width: 40%;
+	height: 100%;
+	padding: 5px;
+	background: #BBBBBB;
+	border: 3px solid black;
+	color: white;
+	text-shadow: 2px 0 0 #000000, -2px 0 0 #000000, 0 2px 0 #000000, 0 -2px 0 #000000, 1px 1px #000000, -1px -1px 0 #000000, 1px -1px 0 #000000, -1px 1px 0 #000000;
 }

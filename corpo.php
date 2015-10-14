@@ -10,6 +10,11 @@
 			<div id="areaBase">
 				<div id="areaJogo">
 					<div id="vitoria"></div>
+					<div align="center">
+						<div id="console">
+							<div id="conteudoConsole"></div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
