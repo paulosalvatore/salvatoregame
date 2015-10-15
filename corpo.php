@@ -6,11 +6,5 @@
 	}
 	include("paginas/".$incluir_arquivo.".php");
 	$conteudo .= '
-		<div id="background" align="center">
-			<div id="areaBase">
-				<div id="areaJogo">
-				</div>
-			</div>
-		</div>
 	';
 ?>
