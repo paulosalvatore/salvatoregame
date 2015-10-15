@@ -103,6 +103,15 @@ function inserirPersonagem(id){
 		</div>\
 	';
 
+	var bloco = '\
+		<div class="personagem" id="'+id+'">\
+			<div class="hpBarraPersonagemBase">\
+				<div class="hpBarraPersonagemConteudo"></div>\
+				<div class="hpBarraPersonagemTexto"></div>\
+			</div>\
+		</div>\
+	';
+
 	var personagem = personagens[id];
 	var valoresIniciais = personagem.valoresIniciais;
 	var posicao = valoresIniciais.posicao;
@@ -131,7 +140,7 @@ function inserirPersonagem(id){
 	$.each(status, function(index, value){
 		personagens[id].data.status[index] = value;
 		personagens[id].data.statusAdicionais[index] = 0;
-		$("#"+id+" .barraStatusPersonagem").append(habilidades[index]+": "+value+'<span class="'+index+'_adicional">+0</span><br>');
+		// $("#"+id+" .barraStatusPersonagem").append(habilidades[index]+": "+value+'<span class="'+index+'_adicional">+0</span><br>');
 	});
 
 	if(id == "aliado"){
@@ -148,7 +157,7 @@ function inserirPersonagem(id){
 			</div>\
 		';
 
-		$("#"+id).append(barraHabilidadesPersonagem);
+		// $("#"+id).append(barraHabilidadesPersonagem);
 	}
 
 	$("#"+id+" .turnoPersonagem").addClass((id == "aliado" ? "left" : "right"));
@@ -414,10 +423,43 @@ function alterarMPPersonagem(personagemId, quantidade){
 	alterarBarra("mp", personagemId, novaQuantidade, quantidade, quantidadeMax);
 }
 
+function teste(slot){
+	
+			/*
+			<div class="alteracaoPersonagem"></div>\
+			<div class="hpBarraPersonagemBase">\
+				<div class="hpBarraPersonagemConteudo"></div>\
+				<div class="hpBarraPersonagemTexto"></div>\
+			</div>\
+			<div class="mpBarraPersonagemBase">\
+				<div class="mpBarraPersonagemConteudo"></div>\
+				<div class="mpBarraPersonagemTexto"></div>\
+			</div>\
+			<div class="turnoPersonagem">\
+				<img src="imagens/turno.gif">\
+			</div>\
+			<div class="imagemPersonagem"></div>\
+			<div class="barraStatusPersonagem"></div>\
+			<div class="barraModificadoresPersonagem"></div>\
+			*/
+	var bloco = '\
+		<div class="personagem slot'+slot+'">\
+			<div class="imagemPersonagem">\
+				\
+			</div>\
+		</div>\
+	';
+	$("#areaJogo").append(bloco);
+}
+
 $(function(){
-	inserirPersonagem("aliado");
-	inserirPersonagem("inimigo");
-	iniciarTurno("aliado");
+	teste(1);
+	teste(2);
+	teste(3);
+	teste(4);
+	// inserirPersonagem("aliado");
+	// inserirPersonagem("inimigo");
+	// iniciarTurno("aliado");
 
 	$(".barraHabilidadesPersonagem.left .ataque").click(function(){
 		var personagem = $(this).closest(".personagem");
