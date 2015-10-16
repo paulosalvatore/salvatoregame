@@ -423,40 +423,46 @@ function alterarMPPersonagem(personagemId, quantidade){
 	alterarBarra("mp", personagemId, novaQuantidade, quantidade, quantidadeMax);
 }
 
-function teste(slot){
-	
-			/*
-			<div class="alteracaoPersonagem"></div>\
-			<div class="hpBarraPersonagemBase">\
-				<div class="hpBarraPersonagemConteudo"></div>\
-				<div class="hpBarraPersonagemTexto"></div>\
-			</div>\
-			<div class="mpBarraPersonagemBase">\
-				<div class="mpBarraPersonagemConteudo"></div>\
-				<div class="mpBarraPersonagemTexto"></div>\
-			</div>\
-			<div class="turnoPersonagem">\
-				<img src="imagens/turno.gif">\
-			</div>\
-			<div class="imagemPersonagem"></div>\
-			<div class="barraStatusPersonagem"></div>\
-			<div class="barraModificadoresPersonagem"></div>\
-			*/
+function adicionarPersonagemEmSlot(slot){
 	var bloco = '\
 		<div class="personagem slot'+slot+'">\
-			<div class="imagemPersonagem">\
-				\
+			<div class="barraModificadoresPersonagem">\
+				<div class="modificador ataque1"></div>\
+				<div class="modificador ataque2"></div>\
 			</div>\
+			<div class="circuloLevelPersonagem">\
+				<div class="level unidade um"></div>\
+			</div>\
+			<div class="hpBarraPersonagemBase">\
+				<div class="fundoBarraPersonagemBase"></div>\
+				<div class="fundoBarraPersonagemBaseCanto"></div>\
+				<div class="hpBarraPersonagemConteudo"></div>\
+				<div class="hpBarraPersonagemTexto"></div>\
+				<div class="fundoBarraCanto"></div>\
+			</div>\
+			<div class="mpBarraPersonagemBase">\
+				<div class="fundoBarraPersonagemBase"></div>\
+				<div class="fundoBarraPersonagemBaseCanto"></div>\
+				<div class="mpBarraPersonagemConteudo"></div>\
+				<div class="mpBarraPersonagemTexto"></div>\
+				<div class="fundoBarraCanto"></div>\
+			</div>\
+			<div class="imagem"></div>\
+			<div class="turno"></div>\
 		</div>\
 	';
 	$("#areaJogo").append(bloco);
 }
 
 $(function(){
-	teste(1);
-	teste(2);
-	teste(3);
-	teste(4);
+	adicionarPersonagemEmSlot(1);
+	adicionarPersonagemEmSlot(2);
+	adicionarPersonagemEmSlot(3);
+	adicionarPersonagemEmSlot(4);
+	adicionarPersonagemEmSlot(5);
+	adicionarPersonagemEmSlot(6);
+	adicionarPersonagemEmSlot(7);
+	adicionarPersonagemEmSlot(8);
 	// inserirPersonagem("aliado");
 	// inserirPersonagem("inimigo");
 	// iniciarTurno("aliado");

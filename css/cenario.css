@@ -17,13 +17,43 @@
 	background: url(../imagens/bg2.gif);
 	background-size: 100% 100%;
 	display: block;
-    position: absolute;
-    height: auto;
-    bottom: 0;
-    top: 0;
-    left: 0;
-    right: 0;
-    margin-bottom: 12%;
+	position: absolute;
+	height: auto;
+	bottom: 0;
+	top: 0;
+	left: 0;
+	right: 0;
+	margin-bottom: 12%;
+}
+
+/* Barra de Habilidades do Personagem */
+
+.barraHabilidades {
+	position: absolute;
+	z-index: 10;
+	bottom: 1%;
+	left: 38%;
+	width: 25%;
+	height: 13%;
+}
+
+.barraHabilidades .habilidade {
+	float: left;
+	background: url(../imagens/botaoHabilidade.png);
+	background-size: 100% 100%;
+	width: 29%;
+	height: 99.16%;
+	margin-left: 3%;
+}
+
+.barraHabilidades .habilidade .imagem {
+	position: absolute;
+	background: url(../imagens/imagemHabilidade.png);
+	background-size: 100% 100%;
+	width: 18.3%;
+	height: 62.566%;
+	margin-top: 5.2%;
+	margin-left: 5.38%;
 }
 
 /* Cenário - Batalha */
@@ -41,48 +71,29 @@
 }
 
 .plataformaPedra.top{
-	height: 15.5%;
-	bottom: 14.5%;
+	height: 17.5%;
+	bottom: 12.5%;
 	z-index: 2;
+	background-size: auto 150%;
 }
 
 .plataformaPedra.bot{
 	height: 10.5%;
 	bottom: 0%;
 	z-index: 1;
+	background-size: auto 253%;
 }
 
 .plataformaGrama.top{
 	height: 6%;
 	bottom: 30%;
 	z-index: 4;
+	background-size: auto 585%;
 }
 
 .plataformaGrama.bot{
 	height: 6%;
 	bottom: 10.5%;
 	z-index: 3;
+	background-size: auto 585%;
 }
-
-/*
-#topUI {
-	z-index: 2;
-	position: absolute;
-	background: url(../imagens/topUI.png);
-	// background-size: 100% 150px;
-	background-size: 100% 100%;
-	width: 100%;
-	// height: 150px;
-	height: 10%;
-}
-
-.barraPersonagem {
-	position: absolute;
-	background: black;
-	width: 30%;
-	// height: 30px;
-	height: 5%;
-	// top: 20px;
-	top: 2%;
-}
-*/
