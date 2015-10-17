@@ -1,0 +1,322 @@
+
+/* Geral */
+
+.monstro {
+	position: absolute;
+	width: 7%;
+	height: 14%;
+}
+
+.monstro.click {
+	cursor: pointer;
+}
+
+.slot1,
+.slot2,
+.slot5,
+.slot6 {
+	z-index: 6;
+	bottom: 10.5%;
+}
+
+.slot3,
+.slot4 ,
+.slot7 ,
+.slot8 {
+	z-index: 5;
+	bottom: 30.5%;
+}
+
+.slot1 {
+	left: 10%;
+}
+
+.slot2 {
+	left: 27%;
+}
+
+.slot3 {
+	left: 6%;
+}
+
+.slot4 {
+	left: 23%;
+}
+
+.slot5 {
+	right: 27%;
+}
+
+.slot6 {
+	right: 10%;
+}
+
+.slot7 {
+	right: 23%;
+}
+
+.slot8 {
+	right: 6%;
+}
+
+.slot1 .imagem,
+.slot2 .imagem,
+.slot3 .imagem,
+.slot4 .imagem {
+	-moz-transform: scale(-1, 1);
+	-webkit-transform: scale(-1, 1);
+	-o-transform: scale(-1, 1);
+	-ms-transform: scale(-1, 1);
+	transform: scale(-1, 1);
+}
+
+/* Modificadores */
+
+.barraModificadoresMonstro {
+	position: absolute;
+	overflow: hidden;
+	width: 186%;
+	height: 30%;
+	top: -57%;
+}
+
+.barraModificadoresMonstro .modificador {
+	float: left;
+	background: url(../imagens/fundoModificadoresMonstro.png) no-repeat;
+	background-size: 300% 100%;
+	width: 17.823%;
+	height: 98.23%;
+	margin-right: 3%;
+}
+
+.barraModificadoresMonstro .modificador.buff {
+	background-position: 51.8% 0%;
+}
+
+.barraModificadoresMonstro .modificador.debuff {
+	background-position: 101.5% 0%;
+}
+
+.barraModificadoresMonstro .modificador .imagemModificador {
+	position: absolute;
+	background: url(../imagens/modificadoresMonstro.png);
+	background-size: 800% 800%;
+	width: 12.003%;
+	height: 66.18%;
+	margin-left: 2%;
+	top: 5%;
+}
+
+.barraModificadoresMonstro .modificador .imagem.ataque1 {
+	background-position: 0% 0%;
+}
+
+.barraModificadoresMonstro .modificador .imagem.ataque2 {
+	background-position: 14% 0%;
+}
+
+/* Level */
+
+.circuloLevelMonstro {
+	position: absolute;
+	z-index: 2;
+	background: url(../imagens/circuloLevel.png);
+	background-size: 100% 100%;
+	top: -39%;
+	margin-left: -49%;
+	width: 50%;
+	height: 45%;
+}
+
+.level {
+	position: absolute;
+}
+
+.level.unidade {
+	margin-top: 25%;
+	margin-left: 27%;
+	width: 50%;
+	height: 50%;
+}
+
+.level.dezena {
+	margin-top: 37%;
+	margin-left: 20%;
+	width: 33%;
+	height: 33%;
+}
+
+.level.dezena:last-child {
+	left: 30%;
+}
+
+.level.zero {
+	background: url(../imagens/lvl/0.png);
+	background-size: 100% 100%;
+}
+
+.level.um {
+	background: url(../imagens/lvl/1.png);
+	background-size: 100% 100%;
+}
+
+.level.dois {
+	background: url(../imagens/lvl/2.png);
+	background-size: 100% 100%;
+}
+
+.level.tres {
+	background: url(../imagens/lvl/3.png);
+	background-size: 100% 100%;
+}
+
+.level.quatro {
+	background: url(../imagens/lvl/4.png);
+	background-size: 100% 100%;
+}
+
+.level.cinco {
+	background: url(../imagens/lvl/5.png);
+	background-size: 100% 100%;
+}
+
+.level.seis {
+	background: url(../imagens/lvl/6.png);
+	background-size: 100% 100%;
+}
+
+.level.sete {
+	background: url(../imagens/lvl/7.png);
+	background-size: 100% 100%;
+}
+
+.level.oito {
+	background: url(../imagens/lvl/8.png);
+	background-size: 100% 100%;
+}
+
+.level.nove {
+	background: url(../imagens/lvl/9.png);
+	background-size: 100% 100%;
+}
+
+.hpBarraMonstroBase.fundo,
+.hpBarraMonstroBase,
+.mpBarraMonstroBase {
+	position: absolute;
+	top: -15%;
+	width: 100%;
+	height: 5%;
+	opacity: .8;
+}
+
+.fundoBarraMonstroBase {
+	position: absolute;
+	background: url(../imagens/fundoBarra.png);
+	background-size: 100% 100%;
+	width: 93.6%;
+	height: 159%;
+    top: -43%;
+}
+
+.fundoBarraMonstroBaseCanto {
+	position: absolute;
+	background: url(../imagens/fundoBarraCanto.png);
+	background-size: 100% 100%;
+	width: 7%;
+	height: 159%;
+	top: -43%;
+	right: -0.6%;
+}
+
+.hpBarraMonstroBase {
+	margin-top: -9%;
+}
+
+.hpBarraMonstroConteudo {
+	background: url(../imagens/barraHP.png);
+}
+
+.mpBarraMonstroBase {
+	margin-top: -0.3%;
+}
+
+.mpBarraMonstroConteudo {
+	background: url(../imagens/barraMP.png);
+}
+
+.hpBarraMonstroConteudo,
+.mpBarraMonstroConteudo {
+	position: absolute;
+	background-size: 100% 100%;
+	width: 100%;
+	height: 100%;
+}
+
+/* Imagem */
+
+.monstro .imagem {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	bottom: 0;
+}
+
+/* Marcadores */
+
+.monstro .marcadores {
+	display: none;
+	position: absolute;
+	z-index: -1;
+	width: 119%;
+	height: 11%;
+	bottom: -7%;
+	left: -11%;
+}
+
+.monstro .marcadores.turno {
+	background: url(../imagens/marcadores/turno.gif) no-repeat;
+	background-size: 100% 100%;
+}
+
+.monstro .marcadores.atacado {
+	background: url(../imagens/marcadores/atacado.gif) no-repeat;
+	background-size: 100% 100%;
+}
+
+.monstro .marcadores.foco {
+	background: url(../imagens/marcadores/foco.gif) no-repeat;
+	background-size: 100% 100%;
+}
+
+.monstro .marcadores.turno.ativo,
+.monstro .marcadores.atacado.ativo,
+.monstro .marcadores.foco.ativo {
+	display: block;
+}
+
+/* Funções do Ambiente de Testes */
+
+.monstro.draconia .imagem {
+	background: url(../imagens/monstros/1.gif);
+	background-size: 100% 100%;
+	bottom: -6%;
+}
+
+.monstro.robo .imagem {
+	background: url(../imagens/monstros/2.gif);
+	background-size: 100% 100%;
+	bottom: -2%;
+}
+
+.monstro.zumbi .imagem {
+	background: url(../imagens/monstros/3.gif);
+	background-size: 100% 100%;
+	bottom: -8%;
+}
+
+.monstro.esqueleto .imagem {
+	background: url(../imagens/monstros/4.gif);
+	background-size: 100% 100%;
+	bottom: -3%;
+}

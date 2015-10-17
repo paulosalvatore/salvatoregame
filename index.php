@@ -15,11 +15,11 @@
 				<title>Game</title>
 				<link rel="stylesheet" type="text/css" href="css/estilos.css">
 				<link rel="stylesheet" type="text/css" href="css/cenario.css">
-				<link rel="stylesheet" type="text/css" href="css/personagens.css">
+				<link rel="stylesheet" type="text/css" href="css/monstros.css">
 				<script type="text/javascript" src="js/lib/jquery.js"></script>
 				<script type="text/javascript" src="js/funcoes.js"></script>
 				<script type="text/javascript" src="js/base/cenario.js"></script>
-				<script type="text/javascript" src="js/base/personagem.js"></script>
+				<script type="text/javascript" src="js/base/monstros.js"></script>
 				';
 				if(file_exists("js/paginas/".$pagina.".js"))
 					echo'

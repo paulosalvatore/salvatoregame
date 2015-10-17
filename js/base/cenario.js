@@ -1,35 +1,4 @@
-// function inserirBarraHabilidades(lado){
-	// var id = "barraHabilidades_"+lado;
-	// var bloco = '\
-		// <div class="barraHabilidades" id="'+id+'">\
-		// </div>\
-	// ';
-	// $("#areaJogo").append(bloco);
-	// $("#"+id).css(lado, 0);
-	// if(lado == "right")
-		// $("#"+id).css({
-			// "-webkit-transform": "rotateY(180deg)",
-			// "transform": "rotateY(180deg)"
-		// });
-// }
-
-// function inserirMensagemVitoria(){
-	// var bloco = '\
-		// <div id="vitoria"></div>\
-	// ';
-	// $("#areaJogo").append(bloco);
-// }
-
-// function inserirConsole(){
-	// var bloco = '\
-		// <div align="center">\
-			// <div id="console">\
-				// <div id="conteudoConsole"></div>\
-			// </div>\
-		// </div>\
-	// ';
-	// $("#areaJogo").append(bloco);
-// }
+/* Cenários */
 
 function construirCenario(){
 	var bloco = '\
@@ -38,8 +7,8 @@ function construirCenario(){
 			<div id="r2">48: 768 x 432</div>\
 			<div id="r3">64: 1024 x 576</div>\
 			<div id="r4">80: 1280 x 720</div>\
-			<div id="r5">96: 1600 x 900</div>\
-			<div id="r6">112: 1920 x 1080</div>\
+			<div id="r5">100: 1600 x 900</div>\
+			<div id="r6">120: 1920 x 1080</div>\
 		</div>\
 		<div id="resolucaoAtual"></div>\
 		<table id="janelaBase" cellpadding="0" cellspacing="0">\
@@ -80,13 +49,13 @@ function construirCenarioBatalha(){
 		<div id="topUI"></div>\
 		<div align="center">\
 			<div class="barraHabilidades">\
-				<div class="habilidade">\
+				<div class="habilidade um" data-habilidade="">\
 					<div class="imagem"></div>\
 				</div>\
-				<div class="habilidade">\
+				<div class="habilidade dois" data-habilidade="">\
 					<div class="imagem"></div>\
 				</div>\
-				<div class="habilidade">\
+				<div class="habilidade tres" data-habilidade="">\
 					<div class="imagem"></div>\
 				</div>\
 			</div>\
@@ -99,9 +68,26 @@ function construirCenarioBatalha(){
 	$("#areaJogo").append(bloco);
 }
 
+/* Console */
+
+function inserirConsole(){
+	var bloco = '\
+		<div align="center">\
+			<div id="console">\
+				<div id="conteudoConsole"></div>\
+			</div>\
+		</div>\
+	';
+	$("#areaJogo").append(bloco);
+}
+
+function inserirMensagemConsole(mensagem){
+	var elemento = $("#conteudoConsole");
+	elemento.append(mensagem+"<br>");
+	elemento.scrollTop(elemento[0].scrollHeight);
+}
+
 $(function(){
 	construirCenario();
 	construirCenarioBatalha();
-	// inserirMensagemVitoria();
-	// inserirConsole();
 });
