@@ -1,11 +1,11 @@
 var monstros = {
 	["draconia"]: {
 		valoresIniciais: {
-			hp: 100,
-			mp: 30,
+			hp: 200,
+			mp: 131,
 			status: {
-				atk: 10,
-				def: 5
+				atk: 30,
+				def: 20
 			}
 		},
 		habilidades: [
@@ -13,30 +13,9 @@ var monstros = {
 				nome: "Força Divina",
 				imagem: "forcaDivina",
 				efeitos: [
-					[9, 20, 0]
-				],
-				alvo: 1,
-				recarga: 3,
-				custo: 30
-			},
-			{
-				nome: "Fúria Selvagem",
-				imagem: "furiaSelvagem",
-				efeitos: [
 					[7, 10, 2]
-				// [tipo, valor, duracao]
 				],
 				alvo: 2,
-				recarga: 3,
-				custo: 25
-			},
-			{
-				nome: "Canalizar Poder",
-				imagem: "canalizarPoder",
-				efeitos: [
-					[4, 30, 0]
-				],
-				alvo: 3,
 				recarga: 3,
 				custo: 0
 			}
@@ -53,17 +32,13 @@ var monstros = {
 		},
 		habilidades: [
 			{
-				nome: "Fúria Selvagem",
+				nome: "Força Divina",
+				imagem: "forcaDivina",
 				efeitos: [
-					[0, 5, 20, 1]
+					[7, 10, 2]
 				],
-				custo: 20
-			},
-			{
-				nome: "Canalizar Poder",
-				efeitos: [
-					[0, 3, 30, 0]
-				],
+				alvo: 2,
+				recarga: 3,
 				custo: 0
 			}
 		]
@@ -79,17 +54,13 @@ var monstros = {
 		},
 		habilidades: [
 			{
-				nome: "Fúria Selvagem",
+				nome: "Força Divina",
+				imagem: "forcaDivina",
 				efeitos: [
-					[0, 5, 20, 1]
+					[7, 10, 2]
 				],
-				custo: 20
-			},
-			{
-				nome: "Canalizar Poder",
-				efeitos: [
-					[0, 3, 30, 0]
-				],
+				alvo: 2,
+				recarga: 3,
 				custo: 0
 			}
 		]
@@ -105,17 +76,13 @@ var monstros = {
 		},
 		habilidades: [
 			{
-				nome: "Fúria Selvagem",
+				nome: "Força Divina",
+				imagem: "forcaDivina",
 				efeitos: [
-					[0, 5, 20, 1]
+					[7, 10, 2]
 				],
-				custo: 20
-			},
-			{
-				nome: "Canalizar Poder",
-				efeitos: [
-					[0, 3, 30, 0]
-				],
+				alvo: 2,
+				recarga: 3,
 				custo: 0
 			}
 		]
@@ -154,17 +121,12 @@ var equipes = {
 				level: 1
 			}
 		}
-	},
+	}
 }
 
-// var habilidades = {
-	// "hp": "HP",
-	// "hpmax": "HPMax",
-	// "mp": "MP",
-	// "mpmax": "MPMax",
-	// "atk": "ATK",
-	// "def": "DEF"
-// }
+var jogo = {
+	valorTurno: 8 // Valor Temporário
+}
 
 /*
 Habilidades
@@ -179,6 +141,12 @@ Habilidades
 	9	ATK - Usa Status
 	10	ATK - Porcentagem HP Aliado
 	11	ATK - Porcentagem HP Inimigo
+	12	Debuff - Impedir Recuperação HP
+	13	Debuff - Impedir Recuperação MP
+	14	Remove todos os Debuffs
+	15	Imunidade a Debuffs
+	16	Escudo
+	17	Invencibilidade (Imunidade a Dano)
 */
 
 /*
@@ -238,8 +206,13 @@ function inserirMonstro(id, equipe, slot){
 
 	$("#areaJogo").append(bloco);
 
+	var valorTurno = jogo.valorTurno;
+	jogo.valorTurno = valorTurno - 1;
+
 	equipes[equipe].monstros[id].data = {
 		turno: 0,
+		valorTurno: valorTurno,
+		vivo: 1,
 		status: {
 			hp: hp,
 			hpmax: hp,
@@ -277,80 +250,142 @@ function exibirLevelMonstro(elementoId, level){
 	$("#"+elementoId+" .circuloLevelMonstro").html(bloco);
 }
 
-function matarMonstro(monstroId){
-	var monstro = $("#"+monstroId);
-	monstro.find(".imagemMonstro").animate({"opacity": 0}, 1000);
+function matarMonstro(monstroId, equipeId){
+	equipes[equipeId].monstros[monstroId].data.vivo = 0;
+
+	$("#"+equipeId+"_"+monstroId)
+		.animate({"opacity": 0}, 1000, function(){
+			$(this).remove();
+		});
+
+	if(verificarMonstrosVivos(equipeId) == 0)
+		declararVitoria((equipeId == "A" ? "B" : "A"));
 }
 
 function pegarMonstroId(elemento){
 	return elemento.data("monstro");
 }
 
+function verificarMonstrosVivos(equipeId){
+	var monstros = equipes[equipeId].monstros;
+	var monstrosVivos = Object.keys(monstros).length;
+
+	$.each(monstros, function(monstroId, monstroInformacoes){
+		if(monstroInformacoes.data.vivo != 1)
+			monstrosVivos -= 1
+	});
+
+	return monstrosVivos;
+}
+
 /* Turnos */
 
-function iniciarTurno(equipe, monstroId){
-	equipes[equipe].monstros[monstroId].data.turno = 1;
+function iniciarTurno(monstroId, equipeId){
+	equipes[equipeId].monstros[monstroId].data.turno = 1;
 
-	$("#"+equipe+"_"+monstroId).find(".turno").addClass("ativo");
+	$("#"+equipeId+"_"+monstroId).find(".turno").addClass("ativo");
 
-	atualizarBarraHabilidades(equipe, monstroId);
+	atualizarBarraHabilidades(equipeId, monstroId);
 
-	if(equipe == "B"){
+	if(equipeId == "B"){
 		setTimeout(function(){
 			inteligenciaArtificial(monstroId);
-		}, 2000);
+		}, 100);
+		// }, 2000);
 	}
 }
 
-function finalizarTurno(monstroId){
-	monstros[monstroId].data.turno = 0;
+function finalizarTurno(monstroId, equipeId){
+	equipes[equipeId].monstros[monstroId].data.turno = 0;
+	equipes[equipeId].monstros[monstroId].data.valorTurno = -1;
 
-	var modificadores = pegarModificadoresMonstro(monstroId);
+	var modificadores = pegarModificadoresMonstro(monstroId, equipeId);
 	$.each(modificadores, function(index, modificador){
 		if(modificador[3] == 1)
-			monstros[monstroId].data.modificadores[index][3] = 0;
+			equipes[equipeId].monstros[monstroId].data.modificadores[index][3] = 0;
 		else if(modificador[2] > 0)
-			monstros[monstroId].data.modificadores[index][2] = modificador[2] - 1;
+			equipes[equipeId].monstros[monstroId].data.modificadores[index][2] = modificador[2] - 1;
 	});
 
-	atualizarModificadoresMonstro(monstroId);
+	atualizarModificadoresMonstro(monstroId, equipeId);
 
-	$("#"+monstroId+" .modificadorMonstro").each(function(){
+	$("#"+equipeId+"_"+monstroId+" .barraModificadoresMonstro .modificador").each(function(){
 		if(parseInt($(this).data("bloqueado")) == 1)
 			$(this).data("bloqueado", 0);
 		else{
-			var novoTurno = parseInt($(this).data("turno")) - 1;
+			var novoTurno = parseInt($(this).data("turnos")) - 1;
 			if(novoTurno == 0)
 				$(this).remove();
 			else
 				$(this)
-					.data("turno", novoTurno)
-					.find(".turno")
-					.text(novoTurno);
+					.data("turnos", novoTurno);
+				// $(this)
+					// .data("turno", novoTurno)
+					// .find(".turno")
+					// .text(novoTurno);
 		}
 	});
 
-	$("#"+monstroId)
-	.find(".turnoMonstro")
-	.fadeOut(200);
+	$("#"+equipeId+"_"+monstroId)
+		.find(".marcadores.turno")
+		.animate({"opacity": 0}, 200, function(){
+			$(this)
+				.removeClass("ativo")
+				.css({"opacity": 1});
+		});
 }
 
-function processarTurnos(monstro1, monstro2){
-	finalizarTurno(monstro1);
-	iniciarTurno(monstro2);
+function processarTurnos(monstroId, equipeId){
+	finalizarTurno(monstroId, equipeId);
+	aumentarTurnos();
+	var proximoMonstro = monstroProximoTurno();
+	iniciarTurno(proximoMonstro[0], proximoMonstro[1]);
 }
 
-function pegarTurnoMonstro(monstroId){
-	return monstros[monstroId].data.turno;
+function aumentarTurnos(){
+	$.each(equipes, function(equipeId, equipeInformacoes){
+		$.each(equipeInformacoes.monstros, function(monstroId, monstroInformacoes){
+			var valorTurno = monstroInformacoes.data.valorTurno;
+			equipes[equipeId].monstros[monstroId].data.valorTurno = valorTurno + 1;
+		});
+	});
 }
+
+function monstroProximoTurno(){
+	var proximoMonstro = [0, 0];
+	var valorTurnoAtual = 0;
+
+	$.each(equipes, function(equipeId, equipeInformacoes){
+		$.each(equipeInformacoes.monstros, function(monstroId, monstroInformacoes){
+			var valorTurno = monstroInformacoes.data.valorTurno;
+			if(valorTurno > 0 && Math.max(valorTurno, valorTurnoAtual) == valorTurno){
+				proximoMonstro = [monstroId, equipeId];
+				valorTurnoAtual = valorTurno;
+			}
+		});
+	});
+
+	return proximoMonstro;
+}
+
+// function pegarTurnoMonstro(monstroId){
+	// return monstros[monstroId].data.turno;
+// }
 
 function pegarMonstroTurno(){
 	var retorno = false
 
-	$.each(equipes["A"].monstros, function(monstroId, monstroInformacoes){
-		var turno = monstroInformacoes.data.turno;
-		if(turno == 1)
-			retorno = [monstroId, "A"];
+	// $.each(equipes["A"].monstros, function(monstroId, monstroInformacoes){
+		// var turno = monstroInformacoes.data.turno;
+		// if(turno == 1)
+			// retorno = [monstroId, "A"];
+	// });
+
+	$.each(equipes, function(equipeId, equipeInformacoes){
+		$.each(equipeInformacoes.monstros, function(monstroId, monstroInformacoes){
+			if(equipeId == "A" && monstroInformacoes.data.turno == 1)
+				retorno = [monstroId, "A"];
+		});
 	});
 
 	return retorno;
@@ -358,11 +393,11 @@ function pegarMonstroTurno(){
 
 /* Inteligência Artificial */
 
-function inteligenciaArtificial(equipe, monstroId){
+function inteligenciaArtificial(monstroId){
 	var equipe = "B";
-	var alvoId = pegarAlvoIA(monstroId);
-	atacarMonstro(monstroId, alvoId);
-	processarTurnos(monstroId, alvoId);
+	// var alvoId = pegarAlvoIA(monstroId);
+	// atacarMonstro(monstroId, alvoId);
+	processarTurnos(monstroId, equipe);
 }
 
 function pegarAlvoIA(monstroId){
@@ -371,40 +406,40 @@ function pegarAlvoIA(monstroId){
 
 /* Ataque */
 
-function atacarMonstro(monstroId, equipeMonstroId, inimigoId, equipeInimigoId, valor, porcentagem){
-	/*
-	var atk = pegarStatusMonstro(monstroId, "atk");
-	var atkAdicional = pegarStatusAdicionalMonstro(monstroId, "atk");
-	var def = pegarStatusMonstro(inimigoId, "def");
-	var defAdicional = pegarStatusAdicionalMonstro(inimigoId, "def");
-	var ataque = atk + atkAdicional - def - defAdicional;
+function atacarMonstro(monstroId, monstroEquipeId, alvoId, alvoEquipeId, valor, porcentagem){
+	var atk = pegarStatusMonstro(monstroId, monstroEquipeId, "atk");
+	var atkAdicional = pegarStatusAdicionalMonstro(monstroId, monstroEquipeId, "atk");
+	var def = pegarStatusMonstro(alvoId, alvoEquipeId, "def");
+	var defAdicional = pegarStatusAdicionalMonstro(alvoId, alvoEquipeId, "def");
 
-	if(ataque > 0){
-		if(alterarHPMonstro(inimigoId, -ataque)){
-			declararVitoria(monstroId);
-			finalizarTurno(monstroId);
-			return;
-		}
-	}
+	var calculoAtaque = atk + atkAdicional;
+	var calculoDefesa = def + defAdicional;
 
-	processarTurnos(monstroId, inimigoId);
-	*/
+	if(valor > 0)
+		calculoAtaque += (porcentagem == 1 ? (valor*atk/100) : valor);
+
+	var dano = calculoAtaque - calculoDefesa;
+
+	if(dano > 0)
+		alterarHPMonstro(alvoId, alvoEquipeId, -dano, 0);
+
+	// processarTurnos(monstroId, inimigoId);
 }
 
 /* Habilidades */
 
-function usarHabilidade(monstroId, equipeId, alvoId, alvoEquipeId, habilidadeId){
+function usarHabilidade(monstroId, monstroEquipeId, alvoId, alvoEquipeId, habilidadeId){
 	var habilidade = pegarHabilidade(monstroId, habilidadeId);
 
 	var custo = habilidade.custo;
-	var mp = pegarStatusMonstro(monstroId, equipeId, "mp");
+	var mp = pegarStatusMonstro(monstroId, monstroEquipeId, "mp");
 
 	if(mp < custo){
 		console.log("MP Insuficiente.");
 		return false;
 	}
 
-	alterarMPMonstro(monstroId, equipeId, -custo);
+	alterarMPMonstro(monstroId, monstroEquipeId, -custo, 0);
 
 	var alvo = habilidade.alvo;
 	var recarga = habilidade.recarga;
@@ -416,44 +451,64 @@ function usarHabilidade(monstroId, equipeId, alvoId, alvoEquipeId, habilidadeId)
 		var turnos = (value[2] && value[2] > 0 ? value[2] : 0);
 
 		switch(tipo){
-			case 1:
+			case 1: // Cura HP Fixo
 				alterarHPMonstro(alvoId, alvoEquipeId, valor, 0);
 				break;
-			case 2:
+			case 2: // Cura HP Porcentagem
 				alterarHPMonstro(alvoId, alvoEquipeId, valor, 1);
 				break;
-			case 3:
-				// alterarHPMaxMonstro(alvoId, alvoEquipeId, valor);
+			case 3: // Aumenta HPMax
+				// adicionarModificadorMonstro(alvoId, alvoEquipeId, "hpmax", valor, turnos);
 				break;
-			case 4:
+			case 4: // Cura MP Fixo
 				alterarMPMonstro(alvoId, alvoEquipeId, valor, 0);
 				break;
-			case 5:
+			case 5: // Cura MP Porcentagem
 				alterarMPMonstro(alvoId, alvoEquipeId, valor, 1);
 				break;
-			case 6:
-				// alterarHPMaxMonstro(alvoId, alvoEquipeId, valor);
+			case 6: // Aumenta MPMax
+				// adicionarModificadorMonstro(alvoId, alvoEquipeId, "mpmax", valor, turnos);
 				break;
-			case 7:
+			case 7: // Buff ATK
 				adicionarModificadorMonstro(alvoId, alvoEquipeId, "atk", valor, turnos);
-			case 8:
+				break;
+			case 8: // Buff DEF
 				adicionarModificadorMonstro(alvoId, alvoEquipeId, "def", valor, turnos);
-			case 9:
-				console.log("Atacar inimigo com "+valor+" de dano.")
-				// atacarMonstro(monstroId, equipeMonstroId, alvoId, alvoEquipeId, valor, 0);
 				break;
-			case 10:
-				console.log("Atacar inimigo em "+valor+"% da sua vida.")
-				// atacarMonstro(monstroId, equipeMonstroId, alvoId, alvoEquipeId, valor, 1);
+			case 9: // ATK - Usa Status
+				// console.log("Atacar inimigo com "+valor+" de dano.");
+				atacarMonstro(monstroId, monstroEquipeId, alvoId, alvoEquipeId, valor, 0);
 				break;
-			case 11:
-				console.log("Atacar inimigo em "+valor+"% da vida dele.")
-				// atacarMonstro(monstroId, equipeMonstroId, alvoId, alvoEquipeId, valor, 2);
+			case 10: // ATK - Porcentagem HP Aliado
+				console.log("Atacar inimigo em "+valor+"% da sua vida.");
+				// atacarMonstro(monstroId, monstroEquipeId, alvoId, alvoEquipeId, valor, 1);
+				break;
+			case 11: // ATK - Porcentagem HP Inimigo
+				console.log("Atacar inimigo em "+valor+"% da vida dele.");
+				// atacarMonstro(monstroId, monstroEquipeId, alvoId, alvoEquipeId, valor, 2);
+				break;
+			case 12: // Debuff - Impedir Recuperação HP
+				// console.log("");
+				break;
+			case 13: // Debuff - Impedir Recuperação MP
+				// console.log("");
+				break;
+			case 14: // Remove todos os Debuffs
+				// console.log("");
+				break;
+			case 15: // Imunidade a Debuffs
+				// console.log("");
+				break;
+			case 16: // Escudo
+				// console.log("");
+				break;
+			case 17: // Invencibilidade (Imunidade a Dano)
+				// console.log("");
 				break;
 		}
 	});
 
-	// processarTurnos(monstroId, inimigoId);
+	processarTurnos(monstroId, monstroEquipeId);
 }
 
 function atualizarBarraHabilidades(equipe, monstroId){
@@ -488,15 +543,13 @@ function pegarHabilidadeSelecionada(){
 function alterarBarra(tipo, monstroId, equipeId, novaQuantidade, quantidadeAlterada, quantidadeMax){
 	var monstro = $("#"+equipeId+"_"+monstroId);
 
-	var novaQuantidade = Math.max(novaQuantidade, 0);
+	var novaQuantidade = Math.max(Math.floor(novaQuantidade), 0);
 	var novaLarguraBarra = novaQuantidade*100/quantidadeMax;
 
 	if(quantidadeAlterada != 0){
-		// monstro
-			// .find("."+tipo+"_atual")
-			// .text(novaQuantidade);
 		monstro
 			.find("."+tipo+"BarraMonstroConteudo")
+			.stop()
 			.animate({"width": novaLarguraBarra+"%"}, 200);
 
 		// var alteracaoMonstroClone = monstro.find(".alteracaoMonstro:first").clone();
@@ -519,18 +572,18 @@ function alterarBarra(tipo, monstroId, equipeId, novaQuantidade, quantidadeAlter
 
 function alterarHPMonstro(monstroId, equipeId, quantidade, porcentagem){
 	var quantidadeMax = pegarStatusMonstro(monstroId, equipeId, "hpmax");
+	quantidade = (porcentagem == 1 ? quantidadeMax*quantidade/100 : quantidade);
 	var novaQuantidade = Math.min(pegarStatusMonstro(monstroId, equipeId, "hp") + quantidade, quantidadeMax);
 	equipes[equipeId].monstros[monstroId].data.status.hp = novaQuantidade;
 	alterarBarra("hp", monstroId, equipeId, novaQuantidade, quantidade, quantidadeMax);
-	if(novaQuantidade <= 0){
-		matarMonstro(monstroId);
-		return true;
-	}
-	return false;
+
+	if(novaQuantidade <= 0)
+		matarMonstro(monstroId, equipeId);
 }
 
 function alterarMPMonstro(monstroId, equipeId, quantidade, porcentagem){
 	var quantidadeMax = pegarStatusMonstro(monstroId, equipeId, "mpmax");
+	quantidade = (porcentagem == 1 ? quantidadeMax*quantidade/100 : quantidade);
 	var novaQuantidade = Math.min(pegarStatusMonstro(monstroId, equipeId, "mp") + quantidade, quantidadeMax);
 	equipes[equipeId].monstros[monstroId].data.status.mp = novaQuantidade;
 	alterarBarra("mp", monstroId, equipeId, novaQuantidade, quantidade, quantidadeMax);
@@ -541,16 +594,30 @@ function alterarMPMonstro(monstroId, equipeId, quantidade, porcentagem){
 function adicionarModificadorMonstro(monstroId, equipeId, tipo, valor, turnos){
 	equipes[equipeId].monstros[monstroId].data.modificadores.push([tipo, valor, turnos, 1]);
 
-	/*
-		<div class="modificador ataque1 debuff">\
-			<div class="imagemModificador"></div>\
-		</div>\
-		<div class="modificador ataque2 buff">\
-			<div class="imagemModificador"></div>\
-		</div>\
-	*/
+	var classes = ["modificador"];
+
+	switch(tipo){
+		case "atk":
+			if(valor > 0)
+				classes.push("ataqueUp");
+			else
+				classes.push("ataqueDown");
+			break;
+		case "def":
+			if(valor > 0)
+				classes.push("defesaUp");
+			else
+				classes.push("defesaDown");
+			break;
+	}
+
+	if(valor > 0)
+		classes.push("buff");
+	else
+		classes.push("debuff");
+
 	var bloco = '\
-		<div class="modificador ataque1 debuff">\
+		<div class="'+classes.join(" ")+'" data-bloqueado="1" data-turnos="'+turnos+'">\
 			<div class="imagemModificador"></div>\
 		</div>\
 	';
@@ -567,24 +634,24 @@ function atualizarModificadoresMonstro(monstroId, equipeId){
 		var turnos = modificador[2];
 		if(turnos == 0){
 			valor = 0;
-			monstros[monstroId].data.modificadores[index][1] = valor;
+			equipes[equipeId].monstros[monstroId].data.modificadores[index][1] = valor;
 		}
 	});
 
-	// monstros[monstroId].data.statusAdicionais = {};
+	equipes[equipeId].monstros[monstroId].data.statusAdicionais = {};
 
-	// $.each(modificadores, function(index, modificador){
-		// var tipo = modificador[0];
-		// var valor = modificador[1];
-		// var valorAtual = monstros[monstroId].data.statusAdicionais[tipo] || 0;
-		// var novoValor = valor + valorAtual;
+	$.each(modificadores, function(index, modificador){
+		var tipo = modificador[0];
+		var valor = modificador[1];
+		var valorAtual = equipes[equipeId].monstros[monstroId].data.statusAdicionais[tipo] || 0;
+		var novoValor = valor + valorAtual;
 
-		// monstros[monstroId].data.statusAdicionais[tipo] = novoValor;
+		equipes[equipeId].monstros[monstroId].data.statusAdicionais[tipo] = novoValor;
 
 		// $("#"+monstroId)
 		// .find("."+tipo+"_adicional")
 		// .text(exibirSinalValor(novoValor));
-	// });
+	});
 }
 
 function pegarModificadoresMonstro(monstroId, equipeId){
@@ -599,12 +666,13 @@ function exibirSinalValor(valor){
 
 /* Finalizar Partida */
 
-function declararVitoria(monstroId){
-	$("#vitoria")
-	.css("opacity", 0)
-	.html("Você "+(monstroId == "aliado" ? "venceu" : "perdeu")+"!")
-	.addClass((monstroId == "aliado" ? "vitoria" : "derrota"))
-	.animate({"opacity": 1}, 1000);
+function declararVitoria(equipeId){
+	console.log(equipeId);
+	// $("#vitoria")
+	// .css("opacity", 0)
+	// .html("Você "+(monstroId == "aliado" ? "venceu" : "perdeu")+"!")
+	// .addClass((monstroId == "aliado" ? "vitoria" : "derrota"))
+	// .animate({"opacity": 1}, 1000);
 }
 
 /* Status */
@@ -625,7 +693,7 @@ function pegarEquipeMonstro(elemento){
 
 $(function(){
 	inserirMonstros();
-	iniciarTurno("A", "draconia");
+	iniciarTurno("draconia", "A");
 
 	$(".barraHabilidades .habilidade").click(function(){
 		if($(this).hasClass("ativo"))
@@ -651,14 +719,14 @@ $(function(){
 				break;
 		}
 	});
-	
+
 	$(".monstro.click .imagem").click(function(event){
 		var monstroClicado = $(this).closest(".monstro");
-		var monstroTurno = pegarMonstroTurno();
-		var monstroIdTurno = monstroTurno[0];
-		var equipeMonstroTurno = monstroTurno[1];
 
-		if(monstroIdTurno != false){
+		var monstroTurno = pegarMonstroTurno();
+		if(monstroTurno != false){
+			var monstroIdTurno = monstroTurno[0];
+			var equipeMonstroTurno = monstroTurno[1];
 			var habilidadeId = pegarHabilidadeSelecionada();
 			var habilidade = pegarHabilidade(monstroIdTurno, habilidadeId);
 			var habilidadeAlvo = habilidade.alvo;
@@ -681,7 +749,17 @@ $(function(){
 				}
 			}
 		}
-		
+
 		return false;
 	});
+
+	// Espaço de Testes
+	// $("#A_draconia .imagem").click();
+	// finalizarTurno("draconia", "A");
+	// iniciarTurno("robo", "A");
+	// finalizarTurno("draconia", "A");
+	// finalizarTurno("draconia", "A");
+	// finalizarTurno("draconia", "A");
+	// console.log(equipes["A"])
+	// alterarHPMonstro("draconia", "A", -200, 0);
 });

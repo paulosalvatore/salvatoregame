@@ -7,7 +7,7 @@
 	height: 14%;
 }
 
-.monstro.click {
+.monstro.click .imagem {
 	cursor: pointer;
 }
 
@@ -103,16 +103,24 @@
 	background-size: 800% 800%;
 	width: 12.003%;
 	height: 66.18%;
-	margin-left: 2%;
+	margin-left: 2.5%;
 	top: 5%;
 }
 
-.barraModificadoresMonstro .modificador .imagem.ataque1 {
+.barraModificadoresMonstro .modificador.ataqueUp .imagemModificador {
 	background-position: 0% 0%;
 }
 
-.barraModificadoresMonstro .modificador .imagem.ataque2 {
-	background-position: 14% 0%;
+.barraModificadoresMonstro .modificador.ataqueDown .imagemModificador {
+	background-position: 28% 0%;
+}
+
+.barraModificadoresMonstro .modificador.defesaUp .imagemModificador {
+	background-position: 85.3% 16%;
+}
+
+.barraModificadoresMonstro .modificador.defesaDown .imagemModificador {
+	background-position: 100% 16%;
 }
 
 /* Level */
