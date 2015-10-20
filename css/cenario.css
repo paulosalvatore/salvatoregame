@@ -26,39 +26,6 @@
 	margin-bottom: 12%;
 }
 
-/* Barra de Habilidades do Monstro */
-
-.barraHabilidades {
-	position: absolute;
-	z-index: 10;
-	bottom: 1%;
-	left: 38%;
-	width: 25%;
-	height: 13%;
-}
-
-.barraHabilidades .habilidade {
-	float: left;
-	background: url(../imagens/botaoHabilidade2.png);
-	background-size: 100% 100%;
-	width: 29%;
-	height: 99.16%;
-	margin-left: 3%;
-}
-.barraHabilidades .habilidade.ativo {
-	background: url(../imagens/botaoHabilidade.png);
-	background-size: 100% 100%;
-}
-
-.barraHabilidades .habilidade .imagem img {
-	position: absolute;
-	width: 18.3%;
-	height: 62.566%;
-	margin-top: 5.2%;
-	margin-left: -9.18%;
-	cursor: pointer;
-}
-
 /* Cenário - Batalha */
 
 .plataformaPedra {
