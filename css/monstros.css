@@ -177,7 +177,7 @@
 	position: absolute;
 	overflow: hidden;
 	width: 186%;
-	height: 30%;
+	height: 43%;
 	top: -57%;
 }
 
@@ -186,7 +186,7 @@
 	background: url(../imagens/fundoModificadoresMonstro.png) no-repeat;
 	background-size: 300% 100%;
 	width: 17.823%;
-	height: 98.23%;
+	height: 68.53%;
 	margin-right: 3%;
 }
 
@@ -203,9 +203,45 @@
 	background: url(../imagens/modificadoresMonstro.png);
 	background-size: 800% 800%;
 	width: 12.003%;
-	height: 66.18%;
+	height: 46.18%;
 	margin-left: 2.5%;
 	top: 5%;
+}
+
+.barraModificadoresMonstro .modificador .turnosModificador {
+	width: 80%;
+	height: 100%;
+	position: absolute;
+	top: 15%;
+	margin-left: -25%;
+	font-size: 145%;
+	z-index: 1;
+	color: orange;
+	text-shadow: 2px 0 0 #000000, -2px 0 0 #000000, 0 2px 0 #000000, 0 -2px 0 #000000, 1px 1px #000000, -1px -1px 0 #000000, 1px -1px 0 #000000, -1px 1px 0 #000000;
+}
+
+.barraModificadoresMonstro .modificador.curar .imagemModificador {
+	background-position: 42% 81%;
+}
+
+.barraModificadoresMonstro .modificador.danoContinuo .imagemModificador {
+	background-position: 71% 64%;
+}
+
+.barraModificadoresMonstro .modificador.hpmaxUp .imagemModificador {
+	background-position: 42% 81%;
+}
+
+.barraModificadoresMonstro .modificador.hpmaxDown .imagemModificador {
+	background-position: 71% 64%;
+}
+
+.barraModificadoresMonstro .modificador.mpUp .imagemModificador {
+	background-position: 71% 64%;
+}
+
+.barraModificadoresMonstro .modificador.mpDown .imagemModificador {
+	background-position: 71% 64%;
 }
 
 .barraModificadoresMonstro .modificador.ataqueUp .imagemModificador {
