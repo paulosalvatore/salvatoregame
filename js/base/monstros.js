@@ -162,12 +162,14 @@ Habilidades
 	9	ATK - Usa Status
 	10	ATK - Porcentagem HP Aliado
 	11	ATK - Porcentagem HP Inimigo
-	12	Debuff - Impedir Recuperação HP
-	13	Debuff - Impedir Recuperação MP
-	14	Remove todos os Debuffs
-	15	Imunidade a Debuffs
-	16	Escudo
-	17	Invencibilidade (Imunidade a Dano)
+	12	Debuff - Impedir Recuperação HP (porcentagem: 1 - 100%)
+	13	Debuff - Impedir Recuperação MP (porcentagem: 1 - 100%)
+	14	Debuff - ATK
+	15	Debuff - DEF
+	16	Remove todos os Debuffs
+	17	Imunidade a Debuffs
+	18	Escudo
+	19	Invencibilidade (Imunidade a Dano)
 */
 
 /*
@@ -234,6 +236,7 @@ function inserirMonstro(monstroId, monstroEquipeId, slot){
 		turno: 0,
 		valorTurno: valorTurno,
 		vivo: 1,
+		regenerarMP: 1,
 		status: {
 			hp: hp,
 			hpmax: hp,
@@ -305,6 +308,9 @@ function verificarMonstrosVivos(equipeId){
 /* Turnos */
 
 function iniciarTurno(monstroId, monstroEquipeId){
+
+	alterarRegenerarMP(monstroId, monstroEquipeId, 1);
+
 	equipes[monstroEquipeId].monstros[monstroId].data.turno = 1;
 
 	$("#"+monstroEquipeId+"_"+monstroId).find(".turno").addClass("ativo");
@@ -315,26 +321,29 @@ function iniciarTurno(monstroId, monstroEquipeId){
 
 	if(monstroEquipeId == "B"){
 		setTimeout(function(){
-			inteligenciaArtificial(monstroId);
+			inteligenciaArtificial(monstroId, "B");
 		}, 1200);
 	}
 }
 
-function finalizarTurno(monstroId, equipeId){
-	equipes[equipeId].monstros[monstroId].data.turno = 0;
-	equipes[equipeId].monstros[monstroId].data.valorTurno = -1;
+function finalizarTurno(monstroId, monstroEquipeId){
+	if(verificarRegenerarMP(monstroId, monstroEquipeId))
+		alterarMPMonstro(monstroId, monstroEquipeId, 10, 1);
 
-	var modificadores = pegarModificadoresMonstro(monstroId, equipeId);
+	equipes[monstroEquipeId].monstros[monstroId].data.turno = 0;
+	equipes[monstroEquipeId].monstros[monstroId].data.valorTurno = -1;
+
+	var modificadores = pegarModificadoresMonstro(monstroId, monstroEquipeId);
 	$.each(modificadores, function(index, modificador){
 		if(modificador[3] == 1)
-			equipes[equipeId].monstros[monstroId].data.modificadores[index][3] = 0;
+			equipes[monstroEquipeId].monstros[monstroId].data.modificadores[index][3] = 0;
 		else if(modificador[2] > 0)
-			equipes[equipeId].monstros[monstroId].data.modificadores[index][2] = modificador[2] - 1;
+			equipes[monstroEquipeId].monstros[monstroId].data.modificadores[index][2] = modificador[2] - 1;
 	});
 
-	atualizarModificadoresMonstro(monstroId, equipeId);
+	atualizarModificadoresMonstro(monstroId, monstroEquipeId);
 
-	$("#"+equipeId+"_"+monstroId+" .barraModificadoresMonstro .modificador").each(function(){
+	$("#"+monstroEquipeId+"_"+monstroId+" .barraModificadoresMonstro .modificador").each(function(){
 		if(parseInt($(this).data("bloqueado")) == 1)
 			$(this).data("bloqueado", 0);
 		else{
@@ -351,7 +360,7 @@ function finalizarTurno(monstroId, equipeId){
 		}
 	});
 
-	$("#"+equipeId+"_"+monstroId)
+	$("#"+monstroEquipeId+"_"+monstroId)
 		.find(".marcadores.turno")
 		.animate({"opacity": 0}, 200, function(){
 			$(this)
@@ -363,14 +372,17 @@ function finalizarTurno(monstroId, equipeId){
 function processarTurnos(monstroId, equipeId){
 	finalizarTurno(monstroId, equipeId);
 
-	if(verificarMonstrosVivos(equipeId) == 0){
-		declararVitoria((equipeId == "A" ? "B" : "A"));
-		return false;
-	}
+	var equipeInimigaId = (equipeId == "A" ? "B" : "A");
 
-	aumentarTurnos();
-	var proximoMonstro = monstroProximoTurno();
-	iniciarTurno(proximoMonstro[0], proximoMonstro[1]);
+	if(verificarMonstrosVivos(equipeId) == 0)
+		declararVitoria(equipeInimigaId);
+	else if(verificarMonstrosVivos(equipeInimigaId) == 0)
+		declararVitoria(equipeId);
+	else{
+		aumentarTurnos();
+		var proximoMonstro = monstroProximoTurno();
+		iniciarTurno(proximoMonstro[0], proximoMonstro[1]);
+	}
 }
 
 function aumentarTurnos(){
@@ -414,15 +426,32 @@ function pegarMonstroTurno(){
 
 /* Inteligência Artificial */
 
-function inteligenciaArtificial(monstroId){
-	var equipe = "B";
-	// var alvoId = pegarAlvoIA(monstroId);
-	// atacarMonstro(monstroId, alvoId);
-	processarTurnos(monstroId, equipe);
+function inteligenciaArtificial(monstroId, monstroEquipeId){
+	var alvoId = pegarAlvoIA(monstroId);
+	var alvoEquipeId = "A";
+
+	var habilidades = pegarHabilidades(monstroId);
+	var habilidadesDisponiveis = [];
+	$.each(habilidades, function(habilidadeId, habilidade){
+		if(habilidadeId > 0){
+			var recarga = Math.max(0, pegarMonstroCooldownHabilidade(monstroId, monstroEquipeId, habilidadeId) - 1);;
+			var custo = pegarCustoMPHabilidade(monstroId, habilidadeId)
+			var mp = pegarStatusMonstro(monstroId, monstroEquipeId, "mp");
+
+			if(custo <= mp && recarga == 0)
+				habilidadesDisponiveis.push(habilidadeId);
+		}
+	});
+
+	var habilidadeSelecionadaId = (habilidadesDisponiveis.length > 0 ? habilidadesDisponiveis[random(0, habilidadesDisponiveis.length - 1)] : 0);
+
+	usarHabilidade(monstroId, monstroEquipeId, alvoId, alvoEquipeId, habilidadeSelecionadaId);
 }
 
 function pegarAlvoIA(monstroId){
-
+	var arrayMonstros = Object.keys(equipes["A"].monstros);
+	var alvoId = arrayMonstros[random(0, arrayMonstros.length - 1)]
+	return alvoId;
 }
 
 /* Ataque */
@@ -448,9 +477,11 @@ function atacarMonstro(monstroId, monstroEquipeId, alvoId, alvoEquipeId, valor, 
 /* Habilidades */
 
 function usarHabilidade(monstroId, monstroEquipeId, alvoId, alvoEquipeId, habilidadeId){
-	var cooldownHabilidade = verificarCooldownHabilidade(monstroId, monstroEquipeId, habilidadeId);
+	var cooldownHabilidade = verificarMonstroCooldownHabilidade(monstroId, monstroEquipeId, habilidadeId);
+	var custo = pegarCustoMPHabilidade(monstroId, habilidadeId)
+	var mp = pegarStatusMonstro(monstroId, monstroEquipeId, "mp");
 
-	if(cooldownHabilidade){
+	if(custo > mp || cooldownHabilidade > 0){
 		$(".habilidade.um .imagem").click();
 		return false;
 	}
@@ -466,6 +497,9 @@ function usarHabilidade(monstroId, monstroEquipeId, alvoId, alvoEquipeId, habili
 	}
 
 	alterarMPMonstro(monstroId, monstroEquipeId, -custo, 0);
+
+	if(custo > 0)
+		alterarRegenerarMP(monstroId, monstroEquipeId, 0);
 
 	var recarga = habilidade.recarga;
 	equipes[monstroEquipeId].monstros[monstroId].data.habilidades[habilidadeId].recarga = recarga + 1;
@@ -515,22 +549,28 @@ function usarHabilidade(monstroId, monstroEquipeId, alvoId, alvoEquipeId, habili
 				console.log("Atacar inimigo em "+valor+"% da vida dele.");
 				// atacarMonstro(monstroId, monstroEquipeId, alvoId, alvoEquipeId, valor, 2);
 				break;
-			case 12: // Debuff - Impedir Recuperação HP
+			case 12: // Debuff - Impedir Recuperação HP (porcentagem: 1 - 100%)
 				// console.log("");
 				break;
-			case 13: // Debuff - Impedir Recuperação MP
+			case 13: // Debuff - Impedir Recuperação MP (porcentagem: 1 - 100%)
 				// console.log("");
 				break;
 			case 14: // Remove todos os Debuffs
 				// console.log("");
 				break;
-			case 15: // Imunidade a Debuffs
+			case 15: // Debuff - ATK
 				// console.log("");
 				break;
-			case 16: // Escudo
+			case 16: // Debuff - DEF
 				// console.log("");
 				break;
-			case 17: // Invencibilidade (Imunidade a Dano)
+			case 17: // Imunidade a Debuffs
+				// console.log("");
+				break;
+			case 18: // Escudo
+				// console.log("");
+				break;
+			case 19: // Invencibilidade (Imunidade a Dano)
 				// console.log("");
 				break;
 		}
@@ -560,14 +600,19 @@ function atualizarBarraHabilidades(monstroId, monstroEquipeId){
 		if(monstroEquipeId == "A"){
 			var imagem = habilidade.imagem;
 			var arquivo = "imagens/habilidades/"+imagem+".png";
-			var classeCooldown = (recarga > 0 ? 'exibir' : 'ocultar');
+
+			var custo = pegarCustoMPHabilidade(monstroId, habilidadeId)
+			var mp = pegarStatusMonstro(monstroId, monstroEquipeId, "mp");
+
+			var classeNumero = (recarga > 0 ? 'exibir' : 'ocultar');
+			var classeCooldown = (recarga > 0 || (custo > mp) ? 'exibir' : 'ocultar');
 
 			$(".barraHabilidades .habilidade."+numeros[habilidadeId+1])
 				.data("habilidade", habilidadeId)
 				.show()
 				.find(".imagem")
 				.html('\
-					<div class="exibirCooldown '+numeros[recarga]+' '+(classeCooldown)+'"></div>\
+					<div class="exibirCooldown '+numeros[recarga]+' '+(classeNumero)+'"></div>\
 					<img src="imagens/habilidades/cooldown.png" class="cooldown '+(classeCooldown)+'">\
 					<img src="'+arquivo+'" class="skill">\
 				');
@@ -587,19 +632,22 @@ function pegarHabilidadeSelecionada(){
 	return $(".barraHabilidades .habilidade.ativo").data("habilidade");
 }
 
+function pegarCustoMPHabilidade(monstroId, habilidadeId){
+	return pegarHabilidade(monstroId, habilidadeId).custo;
+}
+
 function pegarMonstroCooldownHabilidade(monstroId, monstroEquipeId, habilidadeId){
 	return equipes[monstroEquipeId].monstros[monstroId].data.habilidades[habilidadeId].recarga;
 }
 
-function verificarCooldownHabilidade(monstroId, monstroEquipeId, habilidadeId){
+function verificarMonstroCooldownHabilidade(monstroId, monstroEquipeId, habilidadeId){
 	return (pegarMonstroCooldownHabilidade(monstroId, monstroEquipeId, habilidadeId) > 0 ? true : false);
 }
 
-
 /* HP e MP */
 
-function alterarBarra(tipo, monstroId, equipeId, novaQuantidade, quantidadeAlterada, quantidadeMax){
-	var monstro = $("#"+equipeId+"_"+monstroId);
+function alterarBarra(tipo, monstroId, monstroEquipeId, novaQuantidade, quantidadeAlterada, quantidadeMax){
+	var monstro = $("#"+monstroEquipeId+"_"+monstroId);
 
 	var novaQuantidade = Math.max(Math.floor(novaQuantidade), 0);
 	var novaLarguraBarra = novaQuantidade*100/quantidadeMax;
@@ -628,23 +676,31 @@ function alterarBarra(tipo, monstroId, equipeId, novaQuantidade, quantidadeAlter
 	return false;
 }
 
-function alterarHPMonstro(monstroId, equipeId, quantidade, porcentagem){
-	var quantidadeMax = pegarStatusMonstro(monstroId, equipeId, "hpmax");
+function alterarHPMonstro(monstroId, monstroEquipeId, quantidade, porcentagem){
+	var quantidadeMax = pegarStatusMonstro(monstroId, monstroEquipeId, "hpmax");
 	quantidade = (porcentagem == 1 ? quantidadeMax*quantidade/100 : quantidade);
-	var novaQuantidade = Math.min(pegarStatusMonstro(monstroId, equipeId, "hp") + quantidade, quantidadeMax);
-	equipes[equipeId].monstros[monstroId].data.status.hp = novaQuantidade;
-	alterarBarra("hp", monstroId, equipeId, novaQuantidade, quantidade, quantidadeMax);
+	var novaQuantidade = Math.min(pegarStatusMonstro(monstroId, monstroEquipeId, "hp") + quantidade, quantidadeMax);
+	equipes[monstroEquipeId].monstros[monstroId].data.status.hp = novaQuantidade;
+	alterarBarra("hp", monstroId, monstroEquipeId, novaQuantidade, quantidade, quantidadeMax);
 
 	if(novaQuantidade <= 0)
-		matarMonstro(monstroId, equipeId);
+		matarMonstro(monstroId, monstroEquipeId);
 }
 
-function alterarMPMonstro(monstroId, equipeId, quantidade, porcentagem){
-	var quantidadeMax = pegarStatusMonstro(monstroId, equipeId, "mpmax");
+function alterarMPMonstro(monstroId, monstroEquipeId, quantidade, porcentagem){
+	var quantidadeMax = pegarStatusMonstro(monstroId, monstroEquipeId, "mpmax");
 	quantidade = (porcentagem == 1 ? quantidadeMax*quantidade/100 : quantidade);
-	var novaQuantidade = Math.min(pegarStatusMonstro(monstroId, equipeId, "mp") + quantidade, quantidadeMax);
-	equipes[equipeId].monstros[monstroId].data.status.mp = novaQuantidade;
-	alterarBarra("mp", monstroId, equipeId, novaQuantidade, quantidade, quantidadeMax);
+	var novaQuantidade = Math.min(pegarStatusMonstro(monstroId, monstroEquipeId, "mp") + quantidade, quantidadeMax);
+	equipes[monstroEquipeId].monstros[monstroId].data.status.mp = novaQuantidade;
+	alterarBarra("mp", monstroId, monstroEquipeId, novaQuantidade, quantidade, quantidadeMax);
+}
+
+function alterarRegenerarMP(monstroId, monstroEquipeId, valor){
+	return equipes[monstroEquipeId].monstros[monstroId].data.regenerarMP = valor;
+}
+
+function verificarRegenerarMP(monstroId, monstroEquipeId){
+	return (equipes[monstroEquipeId].monstros[monstroId].data.regenerarMP == 1 ? true : false);
 }
 
 /* Modificadores de Monstros */
@@ -722,25 +778,31 @@ function exibirSinalValor(valor){
 	return (valor >= 0 ? "+" : "")+valor;
 }
 
+function random(min, max){
+	return Math.round(Math.random() * (max - min) + min);
+}
+
 /* Finalizar Partida */
 
 function declararVitoria(equipeId){
-	alert((equipeId == "A" ? "VITÓRIA" : "DERROTA")+"!");
-	// $("#vitoria")
-	// .css("opacity", 0)
-	// .html("Você "+(monstroId == "aliado" ? "venceu" : "perdeu")+"!")
-	// .addClass((monstroId == "aliado" ? "vitoria" : "derrota"))
-	// .animate({"opacity": 1}, 1000);
+	setTimeout(function(){
+		alert((equipeId == "A" ? "VITÓRIA" : "DERROTA")+"!");
+		// $("#vitoria")
+		// .css("opacity", 0)
+		// .html("Você "+(monstroId == "aliado" ? "venceu" : "perdeu")+"!")
+		// .addClass((monstroId == "aliado" ? "vitoria" : "derrota"))
+		// .animate({"opacity": 1}, 1000);
+	}, 1000);
 }
 
 /* Status */
 
-function pegarStatusMonstro(monstroId, equipeId, status){
-	return equipes[equipeId].monstros[monstroId].data.status[status] || 0;
+function pegarStatusMonstro(monstroId, monstroEquipeId, status){
+	return equipes[monstroEquipeId].monstros[monstroId].data.status[status] || 0;
 }
 
-function pegarStatusAdicionalMonstro(monstroId, equipeId, status){
-	return equipes[equipeId].monstros[monstroId].data.statusAdicionais[status] || 0;
+function pegarStatusAdicionalMonstro(monstroId, monstroEquipeId, status){
+	return equipes[monstroEquipeId].monstros[monstroId].data.statusAdicionais[status] || 0;
 }
 
 /* Equipes */
@@ -763,9 +825,11 @@ $(function(){
 			var monstroTurnoEquipeId = monstroTurno[1];
 			var habilidadeId = elementoHabilidade.data("habilidade");
 
-			var cooldownHabilidade = verificarCooldownHabilidade(monstroIdTurno, monstroTurnoEquipeId, habilidadeId);
+			var cooldownHabilidade = verificarMonstroCooldownHabilidade(monstroIdTurno, monstroTurnoEquipeId, habilidadeId);
+			var custo = pegarCustoMPHabilidade(monstroIdTurno, habilidadeId)
+			var mp = pegarStatusMonstro(monstroIdTurno, monstroTurnoEquipeId, "mp");
 
-			if(cooldownHabilidade)
+			if(custo > mp || cooldownHabilidade > 0)
 				return false;
 			else{
 				$(".barraHabilidades .habilidade.ativo").removeClass("ativo");
