@@ -13,8 +13,21 @@
 	height: 100%;
 }
 
-#background {
-	background: url(../imagens/bg2.gif);
+#backgroundPrincipal {
+	background: url(../imagens/background/backgroundPrincipal.gif);
+	background-size: 100% 100%;
+	display: block;
+	position: absolute;
+	height: auto;
+	bottom: 0;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: -1;
+}
+
+#backgroundBatalha {
+	background: url(../imagens/background/backgroundBatalha.gif);
 	background-size: 100% 100%;
 	display: block;
 	position: absolute;
@@ -30,13 +43,13 @@
 
 .plataformaPedra {
 	position: absolute;
-	background: url(../imagens/plataformaPedra.png) repeat-x;
+	background: url(../imagens/cenario/plataformaPedra.png) repeat-x;
 	width: 100%;
 }
 
 .plataformaGrama {
 	position: absolute;
-	background: url(../imagens/plataformaGrama.png) repeat-x;
+	background: url(../imagens/cenario/plataformaGrama.png) repeat-x;
 	width: 100%;
 }
 

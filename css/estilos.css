@@ -34,7 +34,7 @@ body {
 	cursor: pointer;
 }
 
-#janelaBase {
+.janelaBase {
 	width: 100%;
 	height: 100%;
 }

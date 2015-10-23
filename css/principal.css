@@ -1,0 +1,24 @@
+/* Menu Principal */
+
+#menuPrincipal {
+	background: url(../imagens/estrutura/fundoDegrade.png);
+	background-size: 100% 100%;
+	width: 50%;
+	border: 2px solid white;
+	text-align: left;
+}
+
+#menuPrincipal .opcao {
+	font-family: Brushstrike;
+	padding: 1%;
+	padding-left: 2%;
+	color: #DADADA;
+	text-shadow: 1px 0 0 #292623, -1px 0 0 #292623, 0 1px 0 #292623, 0 -1px 0 #292623, 1px 1px #292623, -1px -1px 0 #292623, 1px -1px 0 #292623, -1px 1px 0 #292623;
+	text-decoration: none;
+	font-weight: bold;
+	cursor: pointer;
+}
+#menuPrincipal .opcao:hover {
+	background: url(../imagens/estrutura/fundoDegradeInvertido.png);
+	background-size: 100% 100%;
+}

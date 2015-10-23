@@ -82,7 +82,7 @@
 
 .barraHabilidades .habilidade {
 	float: left;
-	background: url(../imagens/botaoHabilidade2.png);
+	background: url(../imagens/barraHabilidades/botaoHabilidade2.png);
 	background-size: 100% 100%;
 	width: 29%;
 	height: 99.16%;
@@ -90,7 +90,7 @@
 }
 
 .barraHabilidades .habilidade.ativo {
-	background: url(../imagens/botaoHabilidade.png);
+	background: url(../imagens/barraHabilidades/botaoHabilidade.png);
 	background-size: 100% 100%;
 }
 
@@ -126,7 +126,7 @@
 
 .barraHabilidades .habilidade .imagem .exibirCooldown {
 	z-index: 3;
-	background: url(../imagens/numeros.png);
+	background: url(../imagens/sprites/numeros.png);
 	background-size: 1030% 105%;
 	position: absolute;
 	width: 12.3%;
@@ -183,7 +183,7 @@
 
 .barraModificadoresMonstro .modificador {
 	float: left;
-	background: url(../imagens/fundoModificadoresMonstro.png) no-repeat;
+	background: url(../imagens/modificadoresMonstro/fundo.png) no-repeat;
 	background-size: 300% 100%;
 	width: 17.823%;
 	height: 68.53%;
@@ -200,7 +200,7 @@
 
 .barraModificadoresMonstro .modificador .imagemModificador {
 	position: absolute;
-	background: url(../imagens/modificadoresMonstro.png);
+	background: url(../imagens/modificadoresMonstro/modificadores.png);
 	background-size: 800% 800%;
 	width: 12.003%;
 	height: 46.18%;
@@ -214,7 +214,6 @@
 	position: absolute;
 	top: 15%;
 	margin-left: -25%;
-	font-size: 145%;
 	z-index: 1;
 	color: orange;
 	text-shadow: 2px 0 0 #000000, -2px 0 0 #000000, 0 2px 0 #000000, 0 -2px 0 #000000, 1px 1px #000000, -1px -1px 0 #000000, 1px -1px 0 #000000, -1px 1px 0 #000000;
@@ -265,7 +264,7 @@
 .circuloLevelMonstro {
 	position: absolute;
 	z-index: 2;
-	background: url(../imagens/circuloLevel.png);
+	background: url(../imagens/sprites/circuloLevel.png);
 	background-size: 100% 100%;
 	top: -39%;
 	margin-left: -49%;
@@ -357,7 +356,7 @@
 
 .fundoBarraMonstroBase {
 	position: absolute;
-	background: url(../imagens/fundoBarra.png);
+	background: url(../imagens/sprites/fundoBarra.png);
 	background-size: 100% 100%;
 	width: 93.6%;
 	height: 159%;
@@ -366,7 +365,7 @@
 
 .fundoBarraMonstroBaseCanto {
 	position: absolute;
-	background: url(../imagens/fundoBarraCanto.png);
+	background: url(../imagens/sprites/fundoBarraCanto.png);
 	background-size: 100% 100%;
 	width: 7%;
 	height: 159%;
@@ -379,7 +378,7 @@
 }
 
 .hpBarraMonstroConteudo {
-	background: url(../imagens/barraHP.png);
+	background: url(../imagens/sprites/barraHP.png);
 }
 
 .mpBarraMonstroBase {
@@ -387,7 +386,7 @@
 }
 
 .mpBarraMonstroConteudo {
-	background: url(../imagens/barraMP.png);
+	background: url(../imagens/sprites/barraMP.png);
 }
 
 .hpBarraMonstroConteudo,
@@ -443,25 +442,25 @@
 /* Funções do Ambiente de Testes */
 
 .monstro.draconia .imagem {
-	background: url(../imagens/monstros/1.gif);
+	background: url(../imagens/monstros/draconia.gif);
 	background-size: 100% 100%;
 	bottom: -6%;
 }
 
 .monstro.robo .imagem {
-	background: url(../imagens/monstros/2.gif);
+	background: url(../imagens/monstros/robo.gif);
 	background-size: 100% 100%;
 	bottom: -2%;
 }
 
 .monstro.zumbi .imagem {
-	background: url(../imagens/monstros/3.gif);
+	background: url(../imagens/monstros/zumbi.gif);
 	background-size: 100% 100%;
 	bottom: -8%;
 }
 
 .monstro.esqueleto .imagem {
-	background: url(../imagens/monstros/4.gif);
+	background: url(../imagens/monstros/esqueleto.gif);
 	background-size: 100% 100%;
 	bottom: -3%;
 }
