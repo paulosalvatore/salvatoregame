@@ -1,4 +1,4 @@
-/* Cen√°rios */
+/* Cen·rios */
 
 function construirCenarioPrincipal(){
 	var bloco = '\

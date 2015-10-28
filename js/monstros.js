@@ -1,3 +1,6 @@
+ï»¿var monstros = {};
+
+/*
 var monstros = {
 	["draconia"]: {
 		valoresIniciais: {
@@ -10,7 +13,7 @@ var monstros = {
 		},
 		habilidades: [
 			{
-				nome: "Furacão",
+				nome: "FuracÃ£o",
 				imagem: "furacao",
 				efeitos: [
 					[9, 0, 0]
@@ -20,7 +23,7 @@ var monstros = {
 				custo: 0
 			},
 			{
-				nome: "Fúria Selvagem",
+				nome: "FÃºria Selvagem",
 				imagem: "furiaSelvagem",
 				efeitos: [
 					[11, 50, 0]
@@ -30,7 +33,7 @@ var monstros = {
 				custo: 80
 			},
 			{
-				nome: "Impacto da Demolição",
+				nome: "Impacto da DemoliÃ§Ã£o",
 				imagem: "impactoDemolicao",
 				efeitos: [
 					[9, 0, 0]
@@ -53,7 +56,7 @@ var monstros = {
 		},
 		habilidades: [
 			{
-				nome: "Força Divina",
+				nome: "ForÃ§a Divina",
 				imagem: "forcaDivina",
 				efeitos: [
 					[7, 10, 3]
@@ -75,7 +78,7 @@ var monstros = {
 		},
 		habilidades: [
 			{
-				nome: "Força Divina",
+				nome: "ForÃ§a Divina",
 				imagem: "forcaDivina",
 				efeitos: [
 					[7, 10, 2]
@@ -97,7 +100,7 @@ var monstros = {
 		},
 		habilidades: [
 			{
-				nome: "Força Divina",
+				nome: "ForÃ§a Divina",
 				imagem: "forcaDivina",
 				efeitos: [
 					[7, 10, 2]
@@ -109,11 +112,12 @@ var monstros = {
 		]
 	}
 }
+*/
 
 var equipes = {
 	"A": {
 		monstros: {
-			"robo": {
+			1: {
 				level: 10
 			},
 			// "draconia": {
@@ -132,7 +136,7 @@ var equipes = {
 			// "robo": {
 				// level: 1
 			// },
-			"draconia": {
+			1: {
 				level: 1
 			},
 			// "zumbi": {
@@ -146,7 +150,7 @@ var equipes = {
 }
 
 var jogo = {
-	valorTurno: 8, // Valor Temporário
+	valorTurno: 8, // Valor TemporÃ¡rio
 	tamanhoCorpo: [0, 0]
 }
 
@@ -163,8 +167,8 @@ Habilidades
 	9	ATK - Usa Status
 	10	ATK - Porcentagem HP Aliado
 	11	ATK - Porcentagem HP Inimigo
-	12	Debuff - Impedir Recuperação HP (porcentagem: 1 - 100%)
-	13	Debuff - Impedir Recuperação MP (porcentagem: 1 - 100%)
+	12	Debuff - Impedir RecuperaÃ§Ã£o HP (porcentagem: 1 - 100%)
+	13	Debuff - Impedir RecuperaÃ§Ã£o MP (porcentagem: 1 - 100%)
 	14	Debuff - ATK
 	15	Debuff - DEF
 	16	Remove todos os Debuffs
@@ -198,7 +202,7 @@ function inserirMonstros(){
 function inserirMonstro(monstroId, monstroEquipeId, slot){
 	var elementoId = monstroEquipeId+"_"+monstroId;
 	var bloco = '\
-		<div class="monstro slot'+slot+' '+monstroId+' click" id="'+elementoId+'" data-monstro="'+monstroId+'" data-equipe="'+monstroEquipeId+'">\
+		<div class="monstro slot'+slot+' '+monstros[monstroId].imagem+' click" id="'+elementoId+'" data-monstro="'+monstroId+'" data-equipe="'+monstroEquipeId+'">\
 			<div class="barraModificadoresMonstro"></div>\
 			<div class="circuloLevelMonstro"></div>\
 			<div class="hpBarraMonstroBase">\
@@ -430,7 +434,7 @@ function dimensionarFonteTurnos(){
 	});
 }
 
-/* Inteligência Artificial */
+/* InteligÃªncia Artificial */
 
 function inteligenciaArtificial(monstroId, monstroEquipeId){
 	var alvoId = pegarAlvoIA(monstroId);
@@ -502,17 +506,12 @@ function usarHabilidade(monstroId, monstroEquipeId, alvoId, alvoEquipeId, habili
 	var mp = pegarStatusMonstro(monstroId, monstroEquipeId, "mp");
 
 	if(custo > mp || cooldownHabilidade > 0){
+		if(custo > mp)
+			console.log("MP Insuficiente.");
+		else if(cooldownHabilidade > 0)
+			console.log("Habilidade em Recarga.");
+
 		$(".habilidade.um .imagem").click();
-		return false;
-	}
-
-	var habilidade = pegarHabilidade(monstroId, habilidadeId);
-
-	var custo = habilidade.custo;
-	var mp = pegarStatusMonstro(monstroId, monstroEquipeId, "mp");
-
-	if(mp < custo){
-		console.log("MP Insuficiente.");
 		return false;
 	}
 
@@ -521,6 +520,8 @@ function usarHabilidade(monstroId, monstroEquipeId, alvoId, alvoEquipeId, habili
 	if(custo > 0)
 		alterarRegenerarMP(monstroId, monstroEquipeId, 0);
 
+	var habilidade = pegarHabilidade(monstroId, habilidadeId);
+
 	var recarga = habilidade.recarga;
 	equipes[monstroEquipeId].monstros[monstroId].data.habilidades[habilidadeId].recarga = recarga + 1;
 
@@ -528,9 +529,9 @@ function usarHabilidade(monstroId, monstroEquipeId, alvoId, alvoEquipeId, habili
 	var efeitos = habilidade.efeitos;
 
 	$.each(efeitos, function(index, value){
-		var tipo = value[0];
-		var valor = value[1];
-		var turnos = (value[2] && value[2] > 0 ? value[2] : 0);
+		var tipo = value.tipo;
+		var valor = value.valor;
+		var turnos = (value.turnos && value.turnos > 0 ? value.turnos : 0);
 
 		switch(tipo){
 			case 1: // Cura HP Fixo
@@ -578,9 +579,9 @@ function usarHabilidade(monstroId, monstroEquipeId, alvoId, alvoEquipeId, habili
 			case 11: // ATK - Porcentagem HP Inimigo
 				atacarMonstro(monstroId, monstroEquipeId, alvoId, alvoEquipeId, valor, 2);
 				break;
-			case 12: // Debuff - Impedir Recuperação HP (porcentagem: 1 - 100%)
+			case 12: // Debuff - Impedir RecuperaÃ§Ã£o HP (porcentagem: 1 - 100%)
 				break;
-			case 13: // Debuff - Impedir Recuperação MP (porcentagem: 1 - 100%)
+			case 13: // Debuff - Impedir RecuperaÃ§Ã£o MP (porcentagem: 1 - 100%)
 				break;
 			case 14: // Remove todos os Debuffs
 				removerDebuffs(alvoId, alvoEquipeId);
@@ -906,7 +907,7 @@ function removerDebuffs(monstroId, monstroEquipeId){
 	});
 }
 
-/* Miscelânea */
+/* MiscelÃ¢nea */
 
 function exibirSinalValor(valor){
 	return (valor >= 0 ? "+" : "")+valor;
@@ -930,10 +931,10 @@ function finalizarPartida(equipeId){
 
 function declararVitoria(equipeId){
 	setTimeout(function(){
-		alert((equipeId == "A" ? "VITÓRIA" : "DERROTA")+"!");
+		alert((equipeId == "A" ? "VITÃ“RIA" : "DERROTA")+"!");
 		// $("#vitoria")
 		// .css("opacity", 0)
-		// .html("Você "+(monstroId == "aliado" ? "venceu" : "perdeu")+"!")
+		// .html("VocÃª "+(monstroId == "aliado" ? "venceu" : "perdeu")+"!")
 		// .addClass((monstroId == "aliado" ? "vitoria" : "derrota"))
 		// .animate({"opacity": 1}, 1000);
 	}, 100);
